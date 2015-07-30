@@ -6,6 +6,7 @@
 #define CLIENT_MODE 1
 #define RESTRICTED -999
 
+#define PENDING -1000;
 
 #define CREATOR		1
 #define HELP    	2
@@ -23,9 +24,12 @@
 #define ERRFILENAME "err_log.txt"
 #define FILENAME "log.txt"
 #define MG 50
+#define NG 20
 #define MAX_STR_SIZE 512
 
-
+#define FOUND 1
+#define NOTFOUND -999
+#define LAST -1
 
 #define START 10
 #define STOP -10
@@ -45,7 +49,7 @@ char *Toupper(char*);
 char intToChar(int);
 char *strrev(char *);
 char *intToString(int );
-
+char *sepExtractor(char*,char, int);
 
 
 struct systemList
@@ -54,7 +58,7 @@ struct systemList
 	char *IPAddress;
 	int portNum;
 	int serialNum;
-	int sockFD;
+	int connFD;
 	struct systemList *next;
 };
 

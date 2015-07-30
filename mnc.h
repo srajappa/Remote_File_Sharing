@@ -79,6 +79,8 @@
 #define STDIN			0
 #define	SERV_PORT		9877
 #define	SERV_PORT_STR 	"9877"  
+#define CLI_PORT		9877	//Change it at the last.
+#define CLI_PORT_STR 	"9877"
 #define SA 				struct sockaddr
 #define min(a,b)		((a)<(b) ? (a):(b))
 #define	max(a,b)		((a)>(b) ? (a):(b))

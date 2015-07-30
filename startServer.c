@@ -4,8 +4,8 @@
 
 char *systemIP,*systemName;
 int systemPort;
-struct systemList *top;
-int maxListNum;
+struct systemList *top = NULL;
+int maxListNum=1;
 
 void startServer(int inputPort){
 	
@@ -25,13 +25,10 @@ void startServer(int inputPort){
 	strcpy(systemName,findMyName());
 
 	log_ret("Entry in List: ",D);
-		top = (struct systemList*)malloc(sizeof(struct systemList));
-		checkAlloc(top);
-	SystemList(top);
-	maxListNum =1;
-	addToList(top,systemName,systemIP,inputPort,maxListNum++,RESTRICTED);
-	
 
+	//Initialize Linked list to contain value of the central server
+
+	top = addList(top,systemName,systemIP,inputPort,maxListNum++,RESTRICTED);
 
 	S_PROMPT;
 
@@ -58,65 +55,79 @@ void startServer(int inputPort){
 	FD_ZERO(&allSet);
 	FD_SET(STDIN,&allSet);					//Registering the standard input file descriptor
 	FD_SET(listenFD,&allSet);
-	char command[MG];
-	int nready,i,j=0;
+	char command[MG],recvMsg[MAX_STR_SIZE];
+	int nready,i,j=0,timeout;
 	socklen_t addrLen;
 	
 	struct timeval t;
 		t.tv_sec = 1;
 		t.tv_usec = 0;
-
+	int numBytes; 
 
 	log_ret("Starting the Select statement",D);
 
 	while(1){
 		readSet = allSet;
-		nready = Select(maxFD+1,&readSet,NULL,NULL,&t);
-		/*If Standard input*/
-		if(FD_ISSET(STDIN, &readSet)){
-			fgets (command, 30, stdin);
-			commandOutput(commandParser(command));
-				memset(command,'\0',MG);
-			S_PROMPT;
-		}else if(FD_ISSET(listenFD,&readSet)){
-			log_ret("Received an accept ",N);	//Got a conncetion
-			addrLen = sizeof(cliAddr);
-			accFD = Accept(listenFD,(SA*)&cliAddr,sizeof(cliAddr));
-			extractInfoAndAdd(cliAddr,top,maxListNum,accFD);
-			sendUpdate(accFD,top);
-			maxFD = max(maxFD,accFD);
-			FD_SET(accFD,&allSet);
-		}else{	//time rotation
-			log_ret("Periodic Update to all nodes",N);
-			periodicUpdate(top);
-		}
-		/*Sending list to the one's who just connected*/
-		for(i=1;i<=maxFD;i++){
-			if(i!=listenFD){
-				if(FD_ISSET(i,&readSet)){
+		timeout = Select(maxFD+1,&readSet,NULL,NULL,NULL);
+		//Run through the File descriptors
+		//Check for if input is coming, else if accepting a new connection
+		//or on time-out sending periodic updates or having received a 
+		//content or having a terminated connection.
+		for(nready=0; nready <= maxFD ; nready++){
+			if(FD_ISSET(nready,&readSet)){
+
+				if(nready == STDIN){
+					fgets (command, 30, stdin);
+					svrOps(command, commandParser(command),listenFD);
+						memset(command,'\0',MG);
+					S_PROMPT;
+
+				}else if(nready==listenFD){
+					log_ret("New Connection ",N);	//Got a conncetion
+					addrLen = sizeof(cliAddr);
+					accFD = Accept(listenFD,(SA*)&cliAddr,sizeof(cliAddr));
+					top = addList(top,"RESTRICTED","RESTRICTED",6666,maxListNum++,accFD);		//Dummy feed. 
+					maxFD = max(maxFD,accFD);
+					FD_SET(accFD,&allSet);
+
+				}else{
 					
+					numBytes = Recv(nready,recvMsg,MAX_STR_SIZE,0);
+					/*if(numBytes==0){
+						log_ret("Connection implicitly close",N);
+						FD_CLR(nready,&allSet);
+						close(nready);
+						deleteEntry(nready,top);
+							memset(recvMsg,'\0',MAX_STR_SIZE);
+					}else{
+						log_ret("Received a message from a connection",N);
+						requestPad(recvMsg,nready,top);
+							memset(recvMsg,'\0',MAX_STR_SIZE);
+					}*/
 				}
 			}
 		}
-		/*Periodic update is sent here below*/
 	}
 }
 
-void commandOutput(int decision){
+void svrOps(char *command, int decision, int listenFD){
 	switch(decision){
 		case CREATOR : 	creator();
 						break;
-		case MYIP:		printf("%s\n",systemIP);
+		case MYIP:		printf("IP Address: %s\n",systemIP);
 						log_ret("CMD: IP Display",I);
 						break;
-		case MYPORT:	printf("%d\n",systemPort);
+		case MYPORT:	printf("Port: %d\n",systemPort);
 						log_ret("CMD: Port Display",I);
 						break;
 		case HELP: 		svr_help();
 						break;
 		case LIST: 		displayList(top);
 						break;
-		case EXIT:		Exit(EXIT_APP);
+		case EXIT:		close(listenFD);
+						Exit(EXIT_APP);
+						break;
+		case CONNECT:	
 		default:		WRONG_COMMAND;
 	}
 }

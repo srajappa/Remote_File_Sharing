@@ -43,6 +43,15 @@ void log_ret(char *str,char mode){
 	close(writeFD);
 }
 
+void log_net_error(char *str,char mode,int val){
+	FILE *writeFD;
+	writeFD = fopen(FILENAME,"a");
+	fprintf(writeFD, "%-20s[%c]->%-20sGAI ERROR <%s>\n",systemDate(),mode,str,gai_strerror(val));
+	fflush(writeFD);
+	close(writeFD);
+}
+
+
 void refresh(int MODE){
 	FILE *writeFD;
 	writeFD = fopen(FILENAME,"a");

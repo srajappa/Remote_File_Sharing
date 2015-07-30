@@ -18,7 +18,7 @@
 int Socket(int family, int type, int protocol){
 	int n;
 	if((n=socket(family,type,protocol))<0){
-		log_ret("Socket Error",E);
+		log_net_error("Socket Error",E,n);
 	}
 	return(n);
 }
@@ -27,41 +27,45 @@ int Socket(int family, int type, int protocol){
 void Bind(int sockfd, const struct sockaddr *myaddr, socklen_t addrlen){
 	int val;
 	if((val = bind(sockfd,myaddr,addrlen)) < 0){
-		log_ret("Bind Error",E);
+		log_net_error("Bind Error",E,val);
 	}
 }
 
 /*listen function*/
 void Listen(int fd, int backlog){
-	char *ptr;
-	/*	if((ptr=getenv("LISTENQ"))!=NULL){
-		backlog = atoi(ptr);
-	}*/								
-
-	if(listen(fd,backlog)<0)
-		log_ret("Listen Error",E);
+	int val;
+	if((val=listen(fd,backlog))<0)
+		log_net_error("Listen Error",E,val);
 }
 
 /*accept function*/
 int Accept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen){
 	int val;
 	if((val = accept(sockfd,cliaddr,addrlen))<0){
-		log_ret("Accept Error",N);
+		log_net_error("Accept Error",N,val);
 	}
 	return(val);
 }
 
 /*connect function*/
+
 void Connect(int fd, struct sockaddr* servaddr, socklen_t addrlen){						
-	if(connect(fd,servaddr,addrlen)<0)
-		log_ret("Connect Error",N);
+	int val;
+	if((val = connect(fd,servaddr,addrlen))<0){
+		
+		log_net_error("Connect Error",N,val);
+	}
+	//return val;
 }
+
+
+
 
 /*select function*/
 int Select(int maxfd, fd_set *readset, fd_set *writeset, fd_set *exceptionset, const struct timeval *timeout){
 	int val;
 	if((val=select(maxfd,readset,writeset,exceptionset,timeout)) < 0){
-		log_ret("Select Error",E);
+		log_net_error("Select Error",E,val);
 	}
 	return(val);
 }
@@ -70,7 +74,7 @@ int Select(int maxfd, fd_set *readset, fd_set *writeset, fd_set *exceptionset, c
 void Getaddrinfo(char IP[], char port[], struct sockaddr *servaddr, struct sockaddr *target){
 	int val;
 	if((val=getaddrinfo(IP,port,servaddr,target))<0){
-		log_ret("Getaddrinfo Error",N);
+		log_net_error("Getaddrinfo Error",N,val);
 	}
 	//return(val);
 }
@@ -79,7 +83,7 @@ void Getaddrinfo(char IP[], char port[], struct sockaddr *servaddr, struct socka
 void Getsockname(int sockFD, struct sockaddr *servaddr, int *length){
 	int val;
 	if((val=getsockname(sockFD,servaddr,length))<0){
-		log_ret("Getaddrinfo Error",N);
+		log_net_error("Getaddrinfo Error",N,val);
 	}
 	//return(val);
 }
@@ -87,6 +91,14 @@ void Getsockname(int sockFD, struct sockaddr *servaddr, int *length){
 void Send(int sockFD,const void *msg,int len,int flags){
 	int val;
 	if((val=send(sockFD,msg,len,flags))<0){
-		log_ret("Sending Failed",N);
+		log_net_error("Sending Failed",N,val);
 	}
+}
+
+int Recv(int sockFD,const void *msg, int len, int flags){
+	int val;
+	if((val=recv(sockFD,msg,len,flags))<0){
+		log_net_error("Recv Failed",N,val);
+	}
+	return val;
 }
