@@ -22,7 +22,7 @@
 #define STATISTICS  12
 
 #define ERRFILENAME "err_log.txt"
-#define FILENAME "log.txt"
+//#define FILENAME "log.txt"
 #define MG 50
 #define NG 20
 #define MAX_STR_SIZE 512
@@ -43,6 +43,7 @@
 
 #define S_PROMPT printf("Svr@[PA-1]> "); fflush(stdout)
 #define C_PROMPT printf("Cli@[PA-1]> "); fflush(stdout)
+
 
 
 

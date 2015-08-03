@@ -23,6 +23,14 @@ int		daemon_proc;
 
 static void err_doit(int, int, const char*, va_list);
 
+
+char FILENAME[MG];
+
+void createLogFile(){
+	strcpy(FILENAME,findMyName());
+	strcat(FILENAME,".txt");
+}
+
 char* systemDate(){
    	time_t now = time(NULL);
    	struct tm *t = localtime(&now);
@@ -37,6 +45,7 @@ char* systemDate(){
 
 void log_ret(char *str,char mode){
 	FILE *writeFD;
+	
 	writeFD = fopen(FILENAME,"a");
 	fprintf(writeFD, "%-20s[%c]->%-50s\n",systemDate(),mode,str);
 	fflush(writeFD);
@@ -45,6 +54,7 @@ void log_ret(char *str,char mode){
 
 void log_net_error(char *str,char mode,int val){
 	FILE *writeFD;
+	
 	writeFD = fopen(FILENAME,"a");
 	fprintf(writeFD, "%-20s[%c]->%-20sGAI ERROR <%s>\n",systemDate(),mode,str,gai_strerror(val));
 	fflush(writeFD);
@@ -53,6 +63,7 @@ void log_net_error(char *str,char mode,int val){
 
 void logEntry(char *str,char *val,char mode){
 	FILE *writeFD;
+	
 	writeFD = fopen(FILENAME,"a");
 	fprintf(writeFD, "%-20s[%c]->%-20s<%s>\n",systemDate(),mode,str,val);
 	fflush(writeFD);
@@ -62,6 +73,7 @@ void logEntry(char *str,char *val,char mode){
 
 void refresh(int MODE){
 	FILE *writeFD;
+	
 	writeFD = fopen(FILENAME,"a");
 	if(MODE==START){
 		fprintf(writeFD, "\n\nft_main Starts [%s]==================================================\n",systemDate() );
@@ -74,6 +86,7 @@ void refresh(int MODE){
 
 void Exit(int i){
 	FILE *writeFD;
+	
 	writeFD = fopen(FILENAME,"a");
 	switch(i){
 		case ERR_IO : 	fprintf(writeFD, "EXIT: I/O Error\n");

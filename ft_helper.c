@@ -261,41 +261,6 @@ struct systemList * rearrangeList(struct systemList *top){
 
 		memset(swapString,'\0',MAX_STR_SIZE);
 
-	/*for(ti = top ; ti->next != NULL; ti = ti->next){
-		for(tj=top; tj->next->next !=NULL; tj = tj->next){
-			tj1=tj->next;
-
-			if(tj->serialNum > tj1->serialNum){
-				swapInt = tj1->serialNum;
-				tj1->serialNum = tj->serialNum;
-				tj->serialNum = swapInt;
-
-				swapInt = tj1->portNum;
-				tj1->portNum = tj->portNum;
-				tj->portNum = swapInt;
-
-				swapInt = tj1->connFD;
-				tj1->connFD = tj->connFD;
-				tj->connFD = swapInt;
-
-				strcpy(swapString,tj1->name);
-					memset(tj1->name,'\0',MAX_STR_SIZE);
-				strcpy(tj1->name,tj->name);
-					memset(tj->name,'\0',MAX_STR_SIZE);
-				strcpy(tj->name,swapString);
-
-				memset(swapString,'\0',MAX_STR_SIZE);
-
-				strcpy(swapString,tj1->IPAddress);
-					memset(tj1->IPAddress,'\0',INET6_ADDRSTRLEN);
-				strcpy(tj1->IPAddress,tj->IPAddress);
-					memset(tj->IPAddress,'\0',INET6_ADDRSTRLEN);
-				strcpy(tj->IPAddress,swapString);
-
-				memset(swapString,'\0',MAX_STR_SIZE);
-			}
-		}
-	}*/
 	free(swapString);
 	return top;
 }
@@ -509,6 +474,34 @@ char *findMyName(){
 
 //NETWORK OPS---------------------------BEGIN
 
+void sendUpdate(struct systemList *top){
+	struct systemList *temp;
+	char *updatePacket = (char*)malloc(sizeof(char)*MAX_STR_SIZE);
+		memset(updatePacket,'\0',MAX_STR_SIZE);
+	char *tempStr = (char*)malloc(sizeof(char)*MAX_STR_SIZE);
+		memset(temp,'\0',MAX_STR_SIZE);
+
+	strcpy(updatePacket,"UPDATE-");
+
+	for(temp = top ; temp != NULL; temp = temp->next){
+		sprintf(tempStr,"%s=%d=%s=!",temp->IPAddress,temp->portNum,temp->name);
+		strcat(updatePacket,tempStr);
+			memset(tempStr,'\0',MAX_STR_SIZE);
+	}
+
+	//Send the packet thus created
+
+	for(temp = top->next; temp!=NULL; temp = temp->next){
+		logEntry("Sending Svr-IP-List to ",temp->name,N);
+		Send(temp->connFD,updatePacket,strlen(updatePacket),0);
+	}
+
+	free(updatePacket);
+	free(tempStr);
+}
+
+
+
 void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 
 
@@ -541,7 +534,7 @@ void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		sprintf(sendInfo,"REG_ACK-%s=%d=%s=",top->IPAddress,top->portNum,top->name);
 
 		Send(nready,sendInfo,strlen(sendInfo),0);
-
+		//sendUpdate(top);
 		free(guestName);
 		free(guestIP);
 		free(sendInfo);
@@ -571,6 +564,9 @@ void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		int num = findID(top);
 		top = addList(top,guestName,guestIP,guestPort,num,nready);
 		top = rearrangeList(top);
+
+		/*free(guestName);
+		free(guestIP);*/
 	}
 
 }

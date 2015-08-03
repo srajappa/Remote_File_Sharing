@@ -9,6 +9,7 @@
 #include "help.h"
 
 int main(int argc, char* argv[]){
+	createLogFile();
 	refresh(START);
 	int mode;
 	mode = validateInput(argc,argv);

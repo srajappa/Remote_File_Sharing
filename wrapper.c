@@ -28,14 +28,19 @@ void Bind(int sockfd, const struct sockaddr *myaddr, socklen_t addrlen){
 	int val;
 	if((val = bind(sockfd,myaddr,addrlen)) < 0){
 		log_net_error("Bind Error",E,val);
+		printf("\nBind Error\n");
+		Exit(ERR_TRANS);
 	}
 }
 
 /*listen function*/
 void Listen(int fd, int backlog){
 	int val;
-	if((val=listen(fd,backlog))<0)
+	if((val=listen(fd,backlog))<0){
 		log_net_error("Listen Error",E,val);
+		printf("\nListen Error\n");
+		Exit(ERR_TRANS);
+	}
 }
 
 /*accept function*/
@@ -52,7 +57,7 @@ int Accept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen){
 			log_net_error("Accept: Firewall forbids",N,val);
 		}else{
 			log_net_error("Accept Error",N,val);
-			printf("ACCEPT: %d\n",val );
+			printf("\nAccept Error\n" );
 		}
 		//printf("\n\n");
 	}
@@ -67,7 +72,7 @@ void Connect(int fd, struct sockaddr* servaddr, socklen_t addrlen){
 		
 		log_net_error("Connect Error",N,val);
 
-
+		printf("\nUnable to Connect\n");
 	}
 	//return val;
 }

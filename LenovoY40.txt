@@ -1,0 +1,33 @@
+
+
+ft_main Starts [<2015-8-3:11-53-37-0.037>]==================================================
+<2015-8-3:11-53-37-0.037>[I]->Identified: Server Mode                           
+<2015-8-3:11-53-37-0.037>[I]->Identified: Port value                            
+<2015-8-3:11-53-37-0.037>[D]->Starting the Server                               
+<2015-8-3:11-53-37-0.037>[I]->IP Address HOST:    <192.168.1.5>
+<2015-8-3:11-53-37-0.037>[I]->System Name HOST:   <LenovoY40>
+<2015-8-3:11-53-37-0.037>[I]->Entry Added in Linked List                        
+<2015-8-3:11-53-37-0.037>[D]->Details added in List:                            
+<2015-8-3:11-53-37-0.037>[N]->Socket Created:     <11>
+<2015-8-3:11-53-37-0.037>[N]->Binding Socket                                    
+<2015-8-3:11-53-37-0.037>[D]->Starting the Select statement                     
+<2015-8-3:11-53-43-0.043>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-8-3:11-53-43-0.043>]**************************************************
+
+
+ft_main Starts [<2015-8-3:11-56-26-0.026>]==================================================
+<2015-8-3:11-56-26-0.026>[I]->Identified: Server Mode                           
+<2015-8-3:11-56-26-0.026>[I]->Identified: Port value                            
+<2015-8-3:11-56-26-0.026>[D]->Starting the Server                               
+<2015-8-3:11-56-26-0.026>[I]->IP Address HOST:    <192.168.1.5>
+<2015-8-3:11-56-26-0.026>[I]->System Name HOST:   <LenovoY40>
+<2015-8-3:11-56-26-0.026>[I]->Entry Added in Linked List                        
+<2015-8-3:11-56-26-0.026>[D]->Details added in List:                            
+<2015-8-3:11-56-26-0.026>[N]->Socket Created:     <11>
+<2015-8-3:11-56-26-0.026>[N]->Binding Socket                                    
+<2015-8-3:11-56-26-0.026>[D]->Starting the Select statement                     
+<2015-8-3:11-56-30-0.030>[I]->CMD: Creator                                      
+<2015-8-3:11-56-32-0.032>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-8-3:11-56-32-0.032>]**************************************************
