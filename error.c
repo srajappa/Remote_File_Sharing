@@ -51,6 +51,14 @@ void log_net_error(char *str,char mode,int val){
 	close(writeFD);
 }
 
+void logEntry(char *str,char *val,char mode){
+	FILE *writeFD;
+	writeFD = fopen(FILENAME,"a");
+	fprintf(writeFD, "%-20s[%c]->%-20s<%s>\n",systemDate(),mode,str,val);
+	fflush(writeFD);
+	close(writeFD);
+}
+
 
 void refresh(int MODE){
 	FILE *writeFD;

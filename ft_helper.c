@@ -10,6 +10,7 @@
  * 3) GENERAL OPERATIONS
  * 4) MISC UTILITIES
  * 5) SOCKET OPS
+ * 6) NETWORK COMMUNICATIONS
  * ----REFERENCES-----
  * The motivation for creating this file was obtained after going through the material in the book
  * Unix Networking Programming (written by W. Richard Stevens). 
@@ -109,6 +110,9 @@ char *sepExtractor(char*line,char symbol, int num){
 int commandParser(char *command){
 	char tempCmd[MG];
 		memset(tempCmd,'\0',MG);
+	if(strlen(command)==1){
+		return BLANK;
+	}
 	command = strtok(command,"\n");
 	strcpy(tempCmd,sepExtractor(command,' ',1));
 
@@ -218,6 +222,83 @@ struct systemList *addList(struct systemList *top, char *name, char *IPAddress, 
 	
 }
 
+
+struct systemList * rearrangeList(struct systemList *top){
+	struct systemList *tj,*tj1;
+	int swapInt;
+	char *swapString = (char*)malloc(sizeof(char)*MAX_STR_SIZE);
+		memset(swapString,'\0',MAX_STR_SIZE);
+
+	tj = top;
+	tj1= top->next;
+
+	
+		swapInt = tj1->serialNum;
+		tj1->serialNum = tj->serialNum;
+		tj->serialNum = swapInt;
+
+		swapInt = tj1->portNum;
+		tj1->portNum = tj->portNum;
+		tj->portNum = swapInt;
+
+		swapInt = tj1->connFD;
+		tj1->connFD = tj->connFD;
+		tj->connFD = swapInt;
+
+		strcpy(swapString,tj1->name);
+			memset(tj1->name,'\0',MAX_STR_SIZE);
+		strcpy(tj1->name,tj->name);
+			memset(tj->name,'\0',MAX_STR_SIZE);
+		strcpy(tj->name,swapString);
+
+		memset(swapString,'\0',MAX_STR_SIZE);
+
+		strcpy(swapString,tj1->IPAddress);
+			memset(tj1->IPAddress,'\0',INET6_ADDRSTRLEN);
+		strcpy(tj1->IPAddress,tj->IPAddress);
+			memset(tj->IPAddress,'\0',INET6_ADDRSTRLEN);
+		strcpy(tj->IPAddress,swapString);
+
+		memset(swapString,'\0',MAX_STR_SIZE);
+
+	/*for(ti = top ; ti->next != NULL; ti = ti->next){
+		for(tj=top; tj->next->next !=NULL; tj = tj->next){
+			tj1=tj->next;
+
+			if(tj->serialNum > tj1->serialNum){
+				swapInt = tj1->serialNum;
+				tj1->serialNum = tj->serialNum;
+				tj->serialNum = swapInt;
+
+				swapInt = tj1->portNum;
+				tj1->portNum = tj->portNum;
+				tj->portNum = swapInt;
+
+				swapInt = tj1->connFD;
+				tj1->connFD = tj->connFD;
+				tj->connFD = swapInt;
+
+				strcpy(swapString,tj1->name);
+					memset(tj1->name,'\0',MAX_STR_SIZE);
+				strcpy(tj1->name,tj->name);
+					memset(tj->name,'\0',MAX_STR_SIZE);
+				strcpy(tj->name,swapString);
+
+				memset(swapString,'\0',MAX_STR_SIZE);
+
+				strcpy(swapString,tj1->IPAddress);
+					memset(tj1->IPAddress,'\0',INET6_ADDRSTRLEN);
+				strcpy(tj1->IPAddress,tj->IPAddress);
+					memset(tj->IPAddress,'\0',INET6_ADDRSTRLEN);
+				strcpy(tj->IPAddress,swapString);
+
+				memset(swapString,'\0',MAX_STR_SIZE);
+			}
+		}
+	}*/
+	free(swapString);
+	return top;
+}
 
 //LINKED LIST __________________________ END
 
@@ -338,12 +419,35 @@ void checkAlloc(void *sample){
 }
 
 
+int findID(struct systemList *top){
+	
+	if(top==NULL)
+		return 1;
+	int foundNum =1,i; 
+	struct systemList *temp;
+	for(i=1; i<= 10 ; i++){
+		for(temp = top; temp != NULL; temp = temp->next){
+			if(i==temp->serialNum){
+				foundNum = 0;
+				break;
+			}
+		}
+		if(foundNum==0){
+			foundNum = 1; 
+			continue;
+		}else{
+			return i;
+		}
+	}
+	
+}
+
 //MISC UTILITIES __________________________ END
 
 
 //SOCKET OPS---------------------------BEGIN
 
-char* findMyIP(){
+char *findMyIP(){
 	int sockfd;
 	
 	struct addrinfo hints,*res;
@@ -370,6 +474,11 @@ char* findMyIP(){
 	strcpy(myIPAddress,inet_ntoa(resv.sin_addr));
 	
 	close(sockfd);
+
+	if(strcmp(myIPAddress,"0.0.0.0")==0){
+		LIMITED_CONNECTION;
+		Exit(ERR_TRANS);
+	}
 	return(myIPAddress); 
 }
 
@@ -398,10 +507,77 @@ char *findMyName(){
 //SOCKET OPS______________________________END
 
 
+//NETWORK OPS---------------------------BEGIN
+
+void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
+
+
+	char tempCmd[MG];
+		memset(tempCmd,'\0',MG);
+
+	strcpy(tempCmd,sepExtractor(recvMsg,'-',1));
+
+	if(strcmp(tempCmd,"REGISTER")==0){
+		/*	1. Extract information about sender and 
+			2. Add information to systemList
+			3. Send Response indicating Confirmation
+			4. Send Packet Update*/
+		char *guestName = (char*)malloc(sizeof(char)*NG);
+			memset(guestName,'\0',NG);
+		char *guestIP = (char *)malloc(sizeof(char)*INET6_ADDRSTRLEN);
+			memset(guestIP,'\0',INET6_ADDRSTRLEN);
+		int guestPort;
+
+		strcpy(guestName,sepExtractor(recvMsg,'=',3));
+		strcpy(guestIP,sepExtractor(sepExtractor(recvMsg,'-',LAST),'=',1));
+
+		guestPort = atoi(sepExtractor(recvMsg,'=',2));
+		//--------------------------------------------
+		int num = findID(top);
+		top = addList(top,guestName,guestIP,guestPort,num,nready);
+		//--------------------------------------------
+		char *sendInfo = (char*)malloc(sizeof(char)*MAX_STR_SIZE);
+			memset(sendInfo,'\0',MAX_STR_SIZE);
+		sprintf(sendInfo,"REG_ACK-%s=%d=%s=",top->IPAddress,top->portNum,top->name);
+
+		Send(nready,sendInfo,strlen(sendInfo),0);
+
+		free(guestName);
+		free(guestIP);
+		free(sendInfo);
+
+	}else if(strcmp(tempCmd,"REG_ACK")==0){
+
+		printf("\nRegistration successfully completed.\n");
+		C_PROMPT;
+		log_ret("Registration Completed",I);
+		/*	1. Extract information about sender and 
+			2. Add information to systemList.
+			3. Sort them.
+		*/
+
+		//--------------------------------------------
+		char *guestName = (char*)malloc(sizeof(char)*NG);
+			memset(guestName,'\0',NG);
+		char *guestIP = (char *)malloc(sizeof(char)*INET6_ADDRSTRLEN);
+			memset(guestIP,'\0',INET6_ADDRSTRLEN);
+		int guestPort;
+
+		strcpy(guestName,sepExtractor(recvMsg,'=',3));
+		strcpy(guestIP,sepExtractor(sepExtractor(recvMsg,'-',LAST),'=',1));
+
+		guestPort = atoi(sepExtractor(recvMsg,'=',2));
+		//--------------------------------------------
+		int num = findID(top);
+		top = addList(top,guestName,guestIP,guestPort,num,nready);
+		top = rearrangeList(top);
+	}
+
+}
 
 
 
-
+//NETWORK OPS______________________________END
 
 /*
 

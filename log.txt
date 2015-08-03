@@ -1188,3 +1188,292 @@ ft_main Starts [<2015-7-27:13-46-49-0.049>]=====================================
 <2015-7-27:13-47-13-0.013>[I]->CMD: Port Display                                 
 EXIT: User exited from application
 ft_main Stops [<2015-7-27:13-47-25-0.025>]**************************************************
+
+
+ft_main Starts [<2015-7-31:13-51-59-0.059>]==================================================
+<2015-7-31:13-51-59-0.059>[I]->Identified: Server Mode                           
+<2015-7-31:13-51-59-0.059>[I]->Identified: Port value                            
+<2015-7-31:13-51-59-0.059>[D]->Starting the Server                               
+<2015-7-31:13-51-59-0.059>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:13-51-59-0.059>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:13-51-59-0.059>[I]->Entry Added in Linked List                        
+<2015-7-31:13-51-59-0.059>[D]->Details added in List:                            
+
+
+ft_main Starts [<2015-7-31:13-55-11-0.011>]==================================================
+<2015-7-31:13-55-11-0.011>[I]->Identified: Server Mode                           
+<2015-7-31:13-55-11-0.011>[I]->Identified: Port value                            
+<2015-7-31:13-55-11-0.011>[D]->Starting the Server                               
+<2015-7-31:13-55-11-0.011>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:13-55-11-0.011>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:13-55-11-0.011>[I]->Entry Added in Linked List                        
+<2015-7-31:13-55-11-0.011>[D]->Details added in List:                            
+
+
+ft_main Starts [<2015-7-31:13-58-8-0.008>]==================================================
+<2015-7-31:13-58-8-0.008>[I]->Identified: Server Mode                           
+<2015-7-31:13-58-8-0.008>[I]->Identified: Port value                            
+<2015-7-31:13-58-8-0.008>[D]->Starting the Server                               
+<2015-7-31:13-58-8-0.008>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:13-58-8-0.008>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:13-58-8-0.008>[I]->Entry Added in Linked List                        
+<2015-7-31:13-58-8-0.008>[D]->Details added in List:                            
+<2015-7-31:13-58-8-0.008>[N]->Socket Created:     <11>
+<2015-7-31:13-58-8-0.008>[N]->Binding Socket                                    
+<2015-7-31:13-58-8-0.008>[D]->Starting the Select statement                     
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:13-58-15-0.015>]**************************************************
+
+
+ft_main Starts [<2015-7-31:13-59-47-0.047>]==================================================
+<2015-7-31:13-59-47-0.047>[I]->Identified: Server Mode                           
+<2015-7-31:13-59-47-0.047>[I]->Identified: Port value                            
+<2015-7-31:13-59-47-0.047>[D]->Starting the Server                               
+<2015-7-31:13-59-47-0.047>[N]->Connect Error       GAI ERROR <Bad value for ai_flags>
+<2015-7-31:13-59-47-0.047>[I]->IP Address HOST:    <0.0.0.0>
+<2015-7-31:13-59-47-0.047>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:13-59-47-0.047>[I]->Entry Added in Linked List                        
+<2015-7-31:13-59-47-0.047>[D]->Details added in List:                            
+<2015-7-31:13-59-47-0.047>[N]->Socket Created:     <12>
+<2015-7-31:13-59-47-0.047>[N]->Binding Socket                                    
+<2015-7-31:13-59-47-0.047>[D]->Starting the Select statement                     
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:13-59-55-0.055>]**************************************************
+
+
+ft_main Starts [<2015-7-31:14-1-49-0.049>]==================================================
+<2015-7-31:14-1-49-0.049>[I]->Identified: Server Mode                           
+<2015-7-31:14-1-49-0.049>[I]->Identified: Port value                            
+<2015-7-31:14-1-49-0.049>[D]->Starting the Server                               
+<2015-7-31:14-1-49-0.049>[N]->Connect Error       GAI ERROR <Bad value for ai_flags>
+<2015-7-31:14-1-49-0.049>[I]->IP Address HOST:    <0.0.0.0>
+<2015-7-31:14-1-49-0.049>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:14-1-49-0.049>[I]->Entry Added in Linked List                        
+<2015-7-31:14-1-49-0.049>[D]->Details added in List:                            
+<2015-7-31:14-1-49-0.049>[N]->Socket Created:     <12>
+<2015-7-31:14-1-49-0.049>[N]->Binding Socket                                    
+<2015-7-31:14-1-49-0.049>[D]->Starting the Select statement                     
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:14-1-52-0.052>]**************************************************
+
+
+ft_main Starts [<2015-7-31:14-2-36-0.036>]==================================================
+<2015-7-31:14-2-36-0.036>[I]->Identified: Server Mode                           
+<2015-7-31:14-2-36-0.036>[I]->Identified: Port value                            
+<2015-7-31:14-2-36-0.036>[D]->Starting the Server                               
+<2015-7-31:14-2-36-0.036>[N]->Connect Error       GAI ERROR <Bad value for ai_flags>
+<2015-7-31:14-2-36-0.036>[I]->IP Address HOST:    <0.0.0.0>
+<2015-7-31:14-2-36-0.036>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:14-2-36-0.036>[I]->Entry Added in Linked List                        
+<2015-7-31:14-2-36-0.036>[D]->Details added in List:                            
+<2015-7-31:14-2-36-0.036>[N]->Socket Created:     <12>
+<2015-7-31:14-2-36-0.036>[N]->Binding Socket                                    
+<2015-7-31:14-2-36-0.036>[D]->Starting the Select statement                     
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:14-2-44-0.044>]**************************************************
+
+
+ft_main Starts [<2015-7-31:14-33-39-0.039>]==================================================
+<2015-7-31:14-33-39-0.039>[I]->Identified: Server Mode                           
+<2015-7-31:14-33-39-0.039>[I]->Identified: Port value                            
+<2015-7-31:14-33-39-0.039>[D]->Starting the Server                               
+<2015-7-31:14-33-39-0.039>[N]->Connect Error       GAI ERROR <Bad value for ai_flags>
+<2015-7-31:14-33-39-0.039>[I]->IP Address HOST:    <0.0.0.0>
+<2015-7-31:14-33-39-0.039>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:14-33-39-0.039>[I]->Entry Added in Linked List                        
+<2015-7-31:14-33-39-0.039>[D]->Details added in List:                            
+<2015-7-31:14-33-39-0.039>[N]->Socket Created:     <12>
+<2015-7-31:14-33-39-0.039>[N]->Binding Socket                                    
+<2015-7-31:14-33-39-0.039>[D]->Starting the Select statement                     
+<2015-7-31:14-33-50-0.050>[I]->CMD: IP Display                                   
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:14-34-2-0.002>]**************************************************
+
+
+ft_main Starts [<2015-7-31:14-34-15-0.015>]==================================================
+<2015-7-31:14-34-15-0.015>[I]->Identified: Server Mode                           
+<2015-7-31:14-34-15-0.015>[I]->Identified: Port value                            
+<2015-7-31:14-34-15-0.015>[D]->Starting the Server                               
+<2015-7-31:14-34-15-0.015>[N]->Connect Error       GAI ERROR <Bad value for ai_flags>
+EXIT: System Error 
+ft_main Stops [<2015-7-31:14-34-15-0.015>]**************************************************
+
+
+ft_main Starts [<2015-7-31:14-34-59-0.059>]==================================================
+<2015-7-31:14-34-59-0.059>[I]->Identified: Server Mode                           
+<2015-7-31:14-34-59-0.059>[I]->Identified: Port value                            
+<2015-7-31:14-34-59-0.059>[D]->Starting the Server                               
+<2015-7-31:14-34-59-0.059>[N]->Connect Error       GAI ERROR <Bad value for ai_flags>
+EXIT: System Error 
+ft_main Stops [<2015-7-31:14-34-59-0.059>]**************************************************
+
+
+ft_main Starts [<2015-7-31:14-35-51-0.051>]==================================================
+<2015-7-31:14-35-51-0.051>[I]->Identified: Server Mode                           
+<2015-7-31:14-35-51-0.051>[I]->Identified: Port value                            
+<2015-7-31:14-35-51-0.051>[D]->Starting the Server                               
+<2015-7-31:14-35-51-0.051>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:14-35-51-0.051>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:14-35-51-0.051>[I]->Entry Added in Linked List                        
+<2015-7-31:14-35-51-0.051>[D]->Details added in List:                            
+<2015-7-31:14-35-51-0.051>[N]->Socket Created:     <11>
+<2015-7-31:14-35-51-0.051>[N]->Binding Socket                                    
+<2015-7-31:14-35-51-0.051>[D]->Starting the Select statement                     
+<2015-7-31:14-35-54-0.054>[I]->CMD: IP Display                                   
+<2015-7-31:14-35-57-0.057>[I]->CMD: Port Display                                 
+<2015-7-31:14-36-19-0.019>[I]->CMD: SVR help                                     
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:15-33-5-0.005>]**************************************************
+
+
+ft_main Starts [<2015-7-31:15-33-11-0.011>]==================================================
+<2015-7-31:15-33-11-0.011>[I]->Identified: Client Mode                           
+<2015-7-31:15-33-11-0.011>[I]->Identified: Port value                            
+<2015-7-31:15-33-11-0.011>[D]->Starting the Client system                        
+<2015-7-31:15-33-11-0.011>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:15-33-11-0.011>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:15-33-11-0.011>[N]->Socket Created:     <>
+<2015-7-31:15-33-11-0.011>[N]->Binding Socket                                    
+<2015-7-31:15-33-11-0.011>[D]->Starting the Select statement                     
+
+
+ft_main Starts [<2015-7-31:15-33-44-0.044>]==================================================
+<2015-7-31:15-33-44-0.044>[I]->Identified: Client Mode                           
+<2015-7-31:15-33-44-0.044>[I]->Identified: Port value                            
+<2015-7-31:15-33-44-0.044>[D]->Starting the Client system                        
+<2015-7-31:15-33-44-0.044>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:15-33-44-0.044>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:15-33-44-0.044>[N]->Socket Created:     <>
+<2015-7-31:15-33-44-0.044>[N]->Binding Socket                                    
+<2015-7-31:15-33-44-0.044>[D]->Starting the Select statement                     
+<2015-7-31:15-33-50-0.050>[I]->CMD: IP Display                                   
+<2015-7-31:15-33-52-0.052>[I]->CMD: Port Display                                 
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:15-34-23-0.023>]**************************************************
+
+
+ft_main Starts [<2015-7-31:15-35-3-0.003>]==================================================
+<2015-7-31:15-35-3-0.003>[I]->Identified: Client Mode                           
+<2015-7-31:15-35-3-0.003>[I]->Identified: Port value                            
+<2015-7-31:15-35-3-0.003>[D]->Starting the Client system                        
+<2015-7-31:15-35-3-0.003>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:15-35-3-0.003>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:15-35-3-0.003>[N]->Socket Created:     <9>
+<2015-7-31:15-35-3-0.003>[N]->Binding Socket                                    
+<2015-7-31:15-35-3-0.003>[D]->Starting the Select statement                     
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:15-35-6-0.006>]**************************************************
+
+
+ft_main Starts [<2015-7-31:16-1-17-0.017>]==================================================
+<2015-7-31:16-1-17-0.017>[I]->Identified: Client Mode                           
+<2015-7-31:16-1-17-0.017>[I]->Identified: Port value                            
+<2015-7-31:16-1-17-0.017>[D]->Starting the Client system                        
+<2015-7-31:16-1-17-0.017>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-1-17-0.017>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-1-17-0.017>[N]->Socket Created:     <9>
+<2015-7-31:16-1-17-0.017>[N]->Binding Socket                                    
+<2015-7-31:16-1-17-0.017>[D]->Starting the Select statement                     
+
+
+ft_main Starts [<2015-7-31:16-2-7-0.007>]==================================================
+<2015-7-31:16-2-7-0.007>[I]->Identified: Client Mode                           
+<2015-7-31:16-2-7-0.007>[I]->Identified: Port value                            
+<2015-7-31:16-2-7-0.007>[D]->Starting the Client system                        
+<2015-7-31:16-2-7-0.007>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-2-7-0.007>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-2-7-0.007>[N]->Socket Created:     <9>
+<2015-7-31:16-2-7-0.007>[N]->Binding Socket                                    
+<2015-7-31:16-2-7-0.007>[D]->Starting the Select statement                     
+
+
+ft_main Starts [<2015-7-31:16-2-18-0.018>]==================================================
+<2015-7-31:16-2-18-0.018>[I]->Identified: Client Mode                           
+<2015-7-31:16-2-18-0.018>[I]->Identified: Port value                            
+<2015-7-31:16-2-18-0.018>[D]->Starting the Client system                        
+<2015-7-31:16-2-18-0.018>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-2-18-0.018>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-2-18-0.018>[N]->Socket Created:     <9>
+<2015-7-31:16-2-18-0.018>[N]->Binding Socket                                    
+<2015-7-31:16-2-18-0.018>[D]->Starting the Select statement                     
+<2015-7-31:16-2-28-0.028>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:16-2-28-0.028>]**************************************************
+
+
+ft_main Starts [<2015-7-31:16-2-35-0.035>]==================================================
+<2015-7-31:16-2-35-0.035>[I]->Identified: Server Mode                           
+<2015-7-31:16-2-35-0.035>[I]->Identified: Port value                            
+<2015-7-31:16-2-35-0.035>[D]->Starting the Server                               
+<2015-7-31:16-2-35-0.035>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-2-35-0.035>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-2-35-0.035>[I]->Entry Added in Linked List                        
+<2015-7-31:16-2-35-0.035>[D]->Details added in List:                            
+<2015-7-31:16-2-35-0.035>[N]->Socket Created:     <11>
+<2015-7-31:16-2-35-0.035>[N]->Binding Socket                                    
+<2015-7-31:16-2-35-0.035>[D]->Starting the Select statement                     
+<2015-7-31:16-2-38-0.038>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:16-2-38-0.038>]**************************************************
+
+
+ft_main Starts [<2015-7-31:16-4-39-0.039>]==================================================
+<2015-7-31:16-4-39-0.039>[I]->Identified: Server Mode                           
+<2015-7-31:16-4-39-0.039>[I]->Identified: Port value                            
+<2015-7-31:16-4-39-0.039>[D]->Starting the Server                               
+<2015-7-31:16-4-39-0.039>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-4-39-0.039>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-4-39-0.039>[I]->Entry Added in Linked List                        
+<2015-7-31:16-4-39-0.039>[D]->Details added in List:                            
+<2015-7-31:16-4-39-0.039>[N]->Socket Created:     <11>
+<2015-7-31:16-4-39-0.039>[N]->Binding Socket                                    
+<2015-7-31:16-4-39-0.039>[D]->Starting the Select statement                     
+<2015-7-31:16-4-44-0.044>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:16-4-44-0.044>]**************************************************
+
+
+ft_main Starts [<2015-7-31:16-4-48-0.048>]==================================================
+<2015-7-31:16-4-48-0.048>[I]->Identified: Server Mode                           
+<2015-7-31:16-4-48-0.048>[I]->Identified: Port value                            
+<2015-7-31:16-4-48-0.048>[D]->Starting the Server                               
+<2015-7-31:16-4-48-0.048>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-4-48-0.048>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-4-48-0.048>[I]->Entry Added in Linked List                        
+<2015-7-31:16-4-48-0.048>[D]->Details added in List:                            
+<2015-7-31:16-4-48-0.048>[N]->Socket Created:     <11>
+<2015-7-31:16-4-48-0.048>[N]->Binding Socket                                    
+<2015-7-31:16-4-48-0.048>[D]->Starting the Select statement                     
+
+
+ft_main Starts [<2015-7-31:16-5-1-0.001>]==================================================
+<2015-7-31:16-5-1-0.001>[I]->Identified: Server Mode                           
+<2015-7-31:16-5-1-0.001>[I]->Identified: Port value                            
+<2015-7-31:16-5-1-0.001>[D]->Starting the Server                               
+<2015-7-31:16-5-1-0.001>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-5-1-0.001>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-5-1-0.001>[I]->Entry Added in Linked List                        
+<2015-7-31:16-5-1-0.001>[D]->Details added in List:                            
+<2015-7-31:16-5-1-0.001>[N]->Socket Created:     <11>
+<2015-7-31:16-5-1-0.001>[N]->Binding Socket                                    
+<2015-7-31:16-5-1-0.001>[D]->Starting the Select statement                     
+<2015-7-31:16-5-27-0.027>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:16-5-27-0.027>]**************************************************
+
+
+ft_main Starts [<2015-7-31:16-5-29-0.029>]==================================================
+<2015-7-31:16-5-29-0.029>[I]->Identified: Server Mode                           
+<2015-7-31:16-5-29-0.029>[I]->Identified: Port value                            
+<2015-7-31:16-5-29-0.029>[D]->Starting the Server                               
+<2015-7-31:16-5-29-0.029>[I]->IP Address HOST:    <192.168.1.5>
+<2015-7-31:16-5-29-0.029>[I]->System Name HOST:   <LenovoY40>
+<2015-7-31:16-5-29-0.029>[I]->Entry Added in Linked List                        
+<2015-7-31:16-5-29-0.029>[D]->Details added in List:                            
+<2015-7-31:16-5-29-0.029>[N]->Socket Created:     <11>
+<2015-7-31:16-5-29-0.029>[N]->Binding Socket                                    
+<2015-7-31:16-5-29-0.029>[D]->Starting the Select statement                     
+<2015-7-31:16-5-33-0.033>[I]->CMD: SVR help                                     
+<2015-7-31:16-47-41-0.041>[I]->CMD: Exit                                         
+EXIT: User exited from application
+ft_main Stops [<2015-7-31:16-47-41-0.041>]**************************************************

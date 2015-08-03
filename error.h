@@ -11,8 +11,9 @@
 
 
 #define EXIT_MESSAGE printf("Abnormal Exit: Check LOGS")
-#define WRONG_COMMAND printf("Incorrect Command: try HELP command\n")
+#define WRONG_COMMAND printf("Incorrect Command: try HELP\n")
 #define CORRECT_REG	printf("Correct Format: \n\t > REGISTER IPADDRESS/(NAME) PORT\n")
+#define LIMITED_CONNECTION printf("Not connected to Internet \n \t- Please try again later\n")
 /*
 void err_ret(char*,...);
 void err_sys(char*,...);

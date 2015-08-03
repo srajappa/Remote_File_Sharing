@@ -6,6 +6,9 @@ char *systemIP,*systemName;
 int systemPort;
 struct systemList *top;
 int maxListNum;
+fd_set readSet, allSet;
+int maxFD;
+
 
 void startClient(int inputPort){
 	systemIP = (char*)malloc(sizeof(char)*INET6_ADDRSTRLEN);
@@ -17,28 +20,25 @@ void startClient(int inputPort){
 
 	systemPort = inputPort;
 
-	log_ret("Calculating the IP address",I);
+	
 	strcpy(systemIP,findMyIP());
-
-	log_ret("Finding the host name of system",I);
+	logEntry("IP Address HOST: ",systemIP,I);
+	
 	strcpy(systemName,findMyName());
+	logEntry("System Name HOST: ",systemName,I);
 
-	log_ret("Entry in List: ",D);
-		/*top = (struct systemList*)malloc(sizeof(struct systemList));
-		checkAlloc(top);
-	SystemList(top);
+	top = addList(top,systemName,systemIP,inputPort,2,RESTRICTED);
+	log_ret("Details added in List: ",D);
 
-	maxListNum =1;
-	addToList(top,systemName,systemIP,inputPort,maxListNum++,RESTRICTED);
 
-	C_PROMPT;
-
-	log_ret("Preparing the socket then binding it",N);*/
-
-	int listenFD,maxFD,accFD;
+	int listenFD,accFD;
 
 	listenFD = Socket(AF_INET,SOCK_STREAM,0);
+		char cSock[PG];
+		memset(cSock,'\0',PG);
+		sprintf(cSock,"%d",listenFD);
 
+	logEntry("Socket Created: ",cSock,N);
 
 	struct sockaddr_in svrAddr,cliAddr;
 	bzero(&svrAddr,sizeof(svrAddr));
@@ -47,12 +47,14 @@ void startClient(int inputPort){
 	svrAddr.sin_port=htons(inputPort);
 
 	Bind(listenFD,(SA*)&svrAddr,sizeof(svrAddr));
+	log_ret("Binding Socket",N);
+
 
 	Listen(listenFD,LISTENQ);
 
 	maxFD = listenFD;
 
-	fd_set readSet, allSet;
+	
 	FD_ZERO(&allSet);
 	FD_SET(STDIN,&allSet);					//Registering the standard input file descriptor
 	FD_SET(listenFD,&allSet);
@@ -61,6 +63,9 @@ void startClient(int inputPort){
 	socklen_t addrLen;
 
 	int numBytes; 
+
+
+	C_PROMPT;
 
 	log_ret("Starting the Select statement",D);
 
@@ -83,9 +88,18 @@ void startClient(int inputPort){
 				}else if(nready==listenFD){
 					log_ret("New Connection ",N);	//Got a conncetion
 					addrLen = sizeof(cliAddr);
-					accFD = Accept(listenFD,(SA*)&cliAddr,sizeof(cliAddr));
+					accFD = Accept(listenFD,(SA*)&cliAddr,&addrLen);
 					/*extractInfoAndAdd(cliAddr,top,maxListNum,accFD);
 					maxListNum++;*/
+					char connAddress[INET6_ADDRSTRLEN];
+						memset(connAddress,'\0',INET6_ADDRSTRLEN);
+
+					struct sockaddr_in *sAdd = (struct sockaddr_in *)&cliAddr;
+
+					inet_ntop(AF_INET, &sAdd->sin_addr, connAddress, sizeof connAddress);
+					//printf("\nConnection request from: %s\n",connAddress);
+					logEntry("CONN from: ",connAddress,N);
+
 					maxFD = max(maxFD,accFD);
 					FD_SET(accFD,&allSet);
 
@@ -99,9 +113,14 @@ void startClient(int inputPort){
 						deleteEntry(nready,top);
 							memset(recvMsg,'\0',MAX_STR_SIZE);*/
 					}else{
+						logEntry("Msg from connection ",recvMsg,N);
+						/*printf("\nrecvMsg: %s\n",recvMsg );
+						C_PROMPT;*/
+						connMessageDecode(recvMsg,nready,top);
 						/*log_ret("Received a message from a connection",N);
-						requestPad(recvMsg,nready,top);
-							memset(recvMsg,'\0',MAX_STR_SIZE);*/
+						requestPad(recvMsg,nready,top);*/
+
+						memset(recvMsg,'\0',MAX_STR_SIZE);
 					}
 				}
 			}
@@ -110,6 +129,7 @@ void startClient(int inputPort){
 }
 
 void clientOps(char *command, int decision, int listenFD){
+
 	switch(decision){
 		case CREATOR : 	creator();
 						break;
@@ -122,27 +142,33 @@ void clientOps(char *command, int decision, int listenFD){
 		case HELP: 		cli_help();
 						break;
 		case LIST: 		displayList(top);
+						log_ret("CMD: List",I);
 						break;
 		case EXIT:		close(listenFD);
+						log_ret("CMD: Exit",I);
 						Exit(EXIT_APP);
 						break;
-		case REGISTER:	registerConnection(command);
+		case REGISTER:	log_ret("CMD: Register",I);
+						registerConnection(command);
 						break;
+		case BLANK:		break;
 		default:		WRONG_COMMAND;
 	}
 }
 
 
 void registerConnection(char *command){
-	log_ret("CMD: Register",I);
+	
 	int i,val;
 	char ent_IP[INET6_ADDRSTRLEN];
 	char ent_Port[NG];
+	
 		memset(ent_IP,'\0',INET6_ADDRSTRLEN);
 		memset(ent_Port,'\0',NG);
 	strcpy(ent_IP,sepExtractor(command,' ',2));
 	strcpy(ent_Port,sepExtractor(command,' ',LAST));
 
+	//printf("%s and %s\n",ent_IP,ent_Port);
 
 	struct addrinfo hints, *res;
 
@@ -152,12 +178,22 @@ void registerConnection(char *command){
 
 	Getaddrinfo(ent_IP, ent_Port, &hints, &res);
 	int sockFD = Socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-	Connect(sockFD, res->ai_addr, res->ai_addrlen);
+		char cSock[PG];
+		memset(cSock,'\0',PG);
+	
+	maxFD = max(maxFD,sockFD);
+	FD_SET(sockFD,&allSet);
+	
+	sprintf(cSock,"%d",sockFD);
 
+	logEntry("Register- Sock created: ",cSock,N);
+	
+    Connect(sockFD, res->ai_addr, res->ai_addrlen);
+	//printf("client: connecting to %s with port %s\n", ent_IP,ent_Port );
 	char strRegist[MAX_STR_SIZE];
 		memset(strRegist,'\0',MAX_STR_SIZE);
 
-	fprintf(strRegist,"REGISTER-%s=%d=%s=",systemIP,systemPort,systemName);
-	
+	sprintf(strRegist,"REGISTER-%s=%d=%s=",systemIP,systemPort,systemName);
+	//printf("%s\n",strRegist);
 	Send(sockFD,strRegist,strlen(strRegist),0);
 }

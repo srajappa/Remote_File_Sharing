@@ -5,7 +5,7 @@
 #define SERVER_MODE 0
 #define CLIENT_MODE 1
 #define RESTRICTED -999
-
+#define BLANK -99
 #define PENDING -1000;
 
 #define CREATOR		1
@@ -26,6 +26,8 @@
 #define MG 50
 #define NG 20
 #define MAX_STR_SIZE 512
+#define PG 6
+
 
 #define FOUND 1
 #define NOTFOUND -999

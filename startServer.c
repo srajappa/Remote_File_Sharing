@@ -9,6 +9,8 @@ int maxListNum=1;
 
 void startServer(int inputPort){
 	
+	struct addrinfo hints, *servinfo;
+
 	systemIP = (char*)malloc(sizeof(char)*INET6_ADDRSTRLEN);
 		checkAlloc(systemIP);
 	systemName = (char*)malloc(sizeof(char)*INET6_ADDRSTRLEN);
@@ -17,35 +19,50 @@ void startServer(int inputPort){
 	memset(systemName,'\0',INET6_ADDRSTRLEN);
 
 	systemPort = inputPort;
+	char str_systemPort[PG];
+		memset(str_systemPort,'\0',PG);
+	sprintf(str_systemPort,"%d",systemPort);
+	
 
-	log_ret("Calculating the IP address",I);
 	strcpy(systemIP,findMyIP());
+	logEntry("IP Address HOST: ",systemIP,I);
 
-	log_ret("Finding the host name of system",I);
 	strcpy(systemName,findMyName());
+	logEntry("System Name HOST: ",systemName,I);
 
-	log_ret("Entry in List: ",D);
+	
 
 	//Initialize Linked list to contain value of the central server
 
 	top = addList(top,systemName,systemIP,inputPort,maxListNum++,RESTRICTED);
+	log_ret("Details added in List: ",D);
+
 
 	S_PROMPT;
 
-	log_ret("Preparing the socket then binding it",N);
 
 	int listenFD,maxFD,accFD;
+		char cSock[PG];
+		memset(cSock,'\0',PG);
+
 
 	listenFD = Socket(AF_INET,SOCK_STREAM,0);
+		sprintf(cSock,"%d",listenFD);
 
+
+	logEntry("Socket Created: ",cSock,N);
 
 	struct sockaddr_in svrAddr,cliAddr;
 	bzero(&svrAddr,sizeof(svrAddr));
+	bzero(&cliAddr,sizeof(cliAddr));
 	svrAddr.sin_family = AF_INET;
 	svrAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	svrAddr.sin_port=htons(SERV_PORT);
+	svrAddr.sin_port=htons(systemPort);
 
-	Bind(listenFD,(SA*)&svrAddr,sizeof(svrAddr));
+	Bind(listenFD,(SA*)&svrAddr, sizeof(svrAddr));
+	log_ret("Binding Socket",N);
+
+
 
 	Listen(listenFD,LISTENQ);
 
@@ -85,25 +102,36 @@ void startServer(int inputPort){
 				}else if(nready==listenFD){
 					log_ret("New Connection ",N);	//Got a conncetion
 					addrLen = sizeof(cliAddr);
-					accFD = Accept(listenFD,(SA*)&cliAddr,sizeof(cliAddr));
-					top = addList(top,"RESTRICTED","RESTRICTED",6666,maxListNum++,accFD);		//Dummy feed. 
+					accFD = Accept(listenFD,(SA*)&cliAddr,&addrLen);
+					char connAddress[INET6_ADDRSTRLEN];
+						memset(connAddress,'\0',INET6_ADDRSTRLEN);
+
+					struct sockaddr_in *sAdd = (struct sockaddr_in *)&cliAddr;
+					inet_ntop(AF_INET, &sAdd->sin_addr, connAddress, sizeof connAddress);
+					printf("\nConnection request from: %s\n",connAddress);
+					logEntry("CONN from: ",connAddress,N);
+
+					S_PROMPT;
+
+					//top = addList(top,,connAddress,6666,maxListNum++,accFD);		//Dummy feed. 
 					maxFD = max(maxFD,accFD);
 					FD_SET(accFD,&allSet);
 
 				}else{
 					
 					numBytes = Recv(nready,recvMsg,MAX_STR_SIZE,0);
-					/*if(numBytes==0){
+					if(numBytes==0){
 						log_ret("Connection implicitly close",N);
 						FD_CLR(nready,&allSet);
 						close(nready);
-						deleteEntry(nready,top);
-							memset(recvMsg,'\0',MAX_STR_SIZE);
+						/*//deleteEntry(nready,top);
+						memset(recvMsg,'\0',MAX_STR_SIZE);*/
 					}else{
-						log_ret("Received a message from a connection",N);
-						requestPad(recvMsg,nready,top);
-							memset(recvMsg,'\0',MAX_STR_SIZE);
-					}*/
+						
+						logEntry("Msg from connection ",recvMsg,N);
+						connMessageDecode(recvMsg,nready,top);
+						memset(recvMsg,'\0',MAX_STR_SIZE);
+					}
 				}
 			}
 		}
@@ -121,12 +149,15 @@ void svrOps(char *command, int decision, int listenFD){
 						log_ret("CMD: Port Display",I);
 						break;
 		case HELP: 		svr_help();
+						log_ret("CMD: List",I);
 						break;
 		case LIST: 		displayList(top);
 						break;
 		case EXIT:		close(listenFD);
+						log_ret("CMD: Exit",I);
 						Exit(EXIT_APP);
 						break;
+		case BLANK: 	break;
 		case CONNECT:	
 		default:		WRONG_COMMAND;
 	}

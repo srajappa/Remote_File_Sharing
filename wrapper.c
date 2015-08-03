@@ -42,7 +42,19 @@ void Listen(int fd, int backlog){
 int Accept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen){
 	int val;
 	if((val = accept(sockfd,cliaddr,addrlen))<0){
-		log_net_error("Accept Error",N,val);
+		if(val==EBADF){
+			log_net_error("Accept: Descriptor Invalid",N,val);	
+		}else if(val==EINVAL){
+			log_net_error("Accept: Socket no conn [addrlen not valid]",N,val);
+		}else if(val==EPROTO){
+			log_net_error("Accept: Protocol Error",N,val);
+		}else if(val==EPERM){
+			log_net_error("Accept: Firewall forbids",N,val);
+		}else{
+			log_net_error("Accept Error",N,val);
+			printf("ACCEPT: %d\n",val );
+		}
+		//printf("\n\n");
 	}
 	return(val);
 }
@@ -54,6 +66,8 @@ void Connect(int fd, struct sockaddr* servaddr, socklen_t addrlen){
 	if((val = connect(fd,servaddr,addrlen))<0){
 		
 		log_net_error("Connect Error",N,val);
+
+
 	}
 	//return val;
 }
