@@ -8,7 +8,7 @@ struct systemList *top;
 int maxListNum;
 fd_set readSet, allSet;
 int maxFD;
-
+int IS_REGISTERED = 0;
 
 void startClient(int inputPort){
 	systemIP = (char*)malloc(sizeof(char)*INET6_ADDRSTRLEN);
@@ -116,7 +116,9 @@ void startClient(int inputPort){
 						logEntry("Msg from connection ",recvMsg,N);
 						/*printf("\nrecvMsg: %s\n",recvMsg );
 						C_PROMPT;*/
-						connMessageDecode(recvMsg,nready,top);
+						if(connMessageDecode(recvMsg,nready,top)==REGISTER){
+							IS_REGISTERED = 1;
+						}
 						/*log_ret("Received a message from a connection",N);
 						requestPad(recvMsg,nready,top);*/
 
@@ -159,6 +161,13 @@ void clientOps(char *command, int decision, int listenFD){
 
 void registerConnection(char *command){
 	
+	if(IS_REGISTERED==1){
+		log_ret("Attempted Re-registration",I);
+		printf("Already Registered: \n");
+		return;
+	}
+
+
 	int i,val;
 	char ent_IP[INET6_ADDRSTRLEN];
 	char ent_Port[NG];

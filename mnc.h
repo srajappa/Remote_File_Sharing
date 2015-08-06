@@ -87,6 +87,9 @@
 
 #define GOOGLE_IP "8.8.8.8"
 
+//int IS_REGISTERED=0;
+
+
 typedef uint32_t socklen_t;
 
 

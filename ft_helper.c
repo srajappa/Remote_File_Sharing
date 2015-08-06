@@ -27,7 +27,7 @@ int I_PORT;
 char svrIP[INET6_ADDRSTRLEN];
 int svrPort;
 char logString[MAX_STR_SIZE];
-
+char myName[MG];
 //STRING OPS --------------------------- BEGIN
 
 char *Toupper(char*strVal){
@@ -262,7 +262,7 @@ struct systemList * rearrangeList(struct systemList *top){
 		memset(swapString,'\0',MAX_STR_SIZE);
 
 	
-	free(swapString);
+	//free(swapString);
 	return top;
 }
 
@@ -445,6 +445,9 @@ char *findMyIP(){
 		LIMITED_CONNECTION;
 		Exit(ERR_TRANS);
 	}
+
+	//
+
 	return(myIPAddress); 
 }
 
@@ -465,6 +468,7 @@ char *findMyName(){
 	Getaddrinfo(hostname,"http",&hints,&info);
 
 	for(p = info; p != NULL; p = p->ai_next) {
+		strcpy(myName,p->ai_canonname);
 	    return(p->ai_canonname);
 	}
 }
@@ -475,12 +479,20 @@ char *findMyName(){
 
 //NETWORK OPS---------------------------BEGIN
 
-void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
+int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 
 	int i;
 	int ctr=0;
 	char tempCmd[MAX_STR_SIZE];
 		memset(tempCmd,'\0',MAX_STR_SIZE);
+	char localB[MAX_STR_SIZE];
+		memset(localB,'\0',MAX_STR_SIZE);
+	char guestName[MG];
+	char guestIP[MG];
+		
+	int guestPort,num;
+	int retVal=0;
+
 
 	strcpy(tempCmd,sepExtractor(recvMsg,'-',1));
 
@@ -489,18 +501,14 @@ void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 			2. Add information to systemList
 			3. Send Response indicating Confirmation
 			4. Send Packet Update*/
-		char *guestName = (char*)malloc(sizeof(char)*NG);
-			memset(guestName,'\0',NG);
-		char *guestIP = (char *)malloc(sizeof(char)*INET6_ADDRSTRLEN);
-			memset(guestIP,'\0',INET6_ADDRSTRLEN);
-		int guestPort;
+		
 
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 		strcpy(guestIP,sepExtractor(sepExtractor(recvMsg,'-',LAST),'=',1));
 
 		guestPort = atoi(sepExtractor(recvMsg,'=',2));
 		//--------------------------------------------
-		int num = findID(top);
+		num = findID(top);
 		top = addList(top,guestName,guestIP,guestPort,num,nready);
 		//--------------------------------------------
 		char *sendInfo = (char*)malloc(sizeof(char)*MAX_STR_SIZE);
@@ -511,9 +519,7 @@ void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 
 		sendUpdate(top);
 
-		free(guestName);
-		free(guestIP);
-		free(sendInfo);
+
 
 	}else if(strcmp(tempCmd,"REG_ACK")==0){
 
@@ -526,45 +532,64 @@ void connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		*/
 
 		//--------------------------------------------
-		char *guestName = (char*)malloc(sizeof(char)*NG);
-			memset(guestName,'\0',NG);
-		char *guestIP = (char *)malloc(sizeof(char)*INET6_ADDRSTRLEN);
-			memset(guestIP,'\0',INET6_ADDRSTRLEN);
-		int guestPort;
+		
 
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 		strcpy(guestIP,sepExtractor(sepExtractor(recvMsg,'-',LAST),'=',1));
 
 		guestPort = atoi(sepExtractor(recvMsg,'=',2));
 		//--------------------------------------------
-		int num = findID(top);
+		num = findID(top);
 		top = addList(top,guestName,guestIP,guestPort,num,nready);
 		top = rearrangeList(top);
+
+		//IS_REGISTERED = 1;
+		retVal = REGISTER;
+
 	}else if(strcmp(tempCmd,"UPDATE")==0){
-		char *updateTemp = (char*)malloc(sizeof(char)*MAX_STR_SIZE);
-			memset(updateTemp,'\0',MAX_STR_SIZE);
-		for(i=0; i<strlen(recvMsg); i++){
+		
+			memset(tempCmd,'\0',MAX_STR_SIZE);
+		strcpy(tempCmd,sepExtractor(recvMsg,'-',LAST));
+		for(i=0; i<strlen(tempCmd); i++){
 			if(tempCmd[i]=='!'){
 				ctr++;
 			}
 		}
-		memset(tempCmd,'\0',MAX_STR_SIZE);
-		strcpy(tempCmd,sepExtractor(recvMsg,'-',LAST));
-		i=1;
-		while(ctr!=0){
-			strcpy(updateTemp,sepExtractor(recvMsg,'!',i));
-			i++;
-			ctr--;
-			if(strcmp(findMyName,sepExtractor(updateTemp,'=',3))==0){
-					memset(updateTemp,'\0',MAX_STR_SIZE);
-				continue;
-			}else{
-				addList(top,sepExtractor(updateTemp,'=',3),sepExtractor(updateTemp,'=',1),sepExtractor(updateTemp,'=',2),findID(top),RESTRICTED);
-			}			
+		printf("\n--Recvd updated SERVER-IP list--\n");
+		for(i=1; i<=ctr; i++){
+			strcpy(localB,sepExtractor(tempCmd,'!',i));
+
+			printf("[%d]   <--%s--%d--%s>\n",i,sepExtractor(localB,'=',1),atoi(sepExtractor(localB,'=',2)),sepExtractor(localB,'=',3));
+			//printf("While localB [%d]: %s\n",i,localB );
+			memset(localB,'\0',MAX_STR_SIZE);
+			memset(guestName,'\0',MG);
+			memset(guestIP,'\0',INET6_ADDRSTRLEN);		
 		}
 
-		free(updateTemp);
+		for(i=1; i<=ctr; i++){
+			strcpy(localB,sepExtractor(tempCmd,'!',i));
+			if(strcmp(myName,sepExtractor(localB,'=',3))==0){
+				memset(localB,'\0',MAX_STR_SIZE);
+				
+				continue;
+			}else{
+				strcpy(guestName,sepExtractor(localB,'=',3));
+				strcpy(guestIP,sepExtractor(localB,'=',1));
+				guestPort = atoi(sepExtractor(localB,'=',2));
+				num = findID(top);
+				//printf("GIP:%s GNAME:%s GPORT %d\n",guestIP, guestName,guestPort );
+
+				top = addList(top,guestName,guestIP,guestPort,num,-100);
+				memset(localB,'\0',MAX_STR_SIZE);
+				memset(guestName,'\0',MG);
+				memset(guestIP,'\0',INET6_ADDRSTRLEN);				
+			}
+		}
+		
+		C_PROMPT;
 	}
+
+	return retVal;
 
 }
 
@@ -576,18 +601,18 @@ void sendUpdate(struct systemList *top){
 		memset(tempStr,'\0',MAX_STR_SIZE);
 	strcpy(payLoad,"UPDATE-");
 	for(temp = top->next; temp!=NULL; temp = temp->next){
-		sprintf(tempStr,"%s=%d=%s!",temp->IPAddress,temp->portNum,temp->name);
+		sprintf(tempStr,"%s=%d=%s=!",temp->IPAddress,temp->portNum,temp->name);
 		strcat(payLoad,tempStr); 	//Append new data;
 			memset(tempStr,'\0',MAX_STR_SIZE);
 	}
 	logEntry("Update Payload: ",payLoad,I);
-	for(temp = temp->next; temp!=NULL; temp=temp->next){
+	for(temp = top->next; temp!=NULL; temp=temp->next){
 		logEntry("Sending update to: ", temp->IPAddress, N);
 		Send(temp->connFD,payLoad,strlen(payLoad),0);
 	}
 
-	free(payLoad);
-	free(tempStr);
+	/*free(payLoad);
+	free(tempStr);*/
 }
 
 //NETWORK OPS______________________________END
