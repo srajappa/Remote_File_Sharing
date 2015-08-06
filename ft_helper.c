@@ -610,7 +610,7 @@ void sendUpdate(struct systemList *top){
 		logEntry("Sending update to: ", temp->IPAddress, N);
 		Send(temp->connFD,payLoad,strlen(payLoad),0);
 	}
-
+	//Srinivasan is here when register was completed
 	/*free(payLoad);
 	free(tempStr);*/
 }
