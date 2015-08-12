@@ -9,6 +9,7 @@ int maxListNum;
 fd_set readSet, allSet;
 int maxFD;
 int IS_REGISTERED = 0;
+int maxConnection = 0;
 
 void startClient(int inputPort){
 	systemIP = (char*)malloc(sizeof(char)*INET6_ADDRSTRLEN);
@@ -58,7 +59,7 @@ void startClient(int inputPort){
 	FD_ZERO(&allSet);
 	FD_SET(STDIN,&allSet);					//Registering the standard input file descriptor
 	FD_SET(listenFD,&allSet);
-	char command[MG],recvMsg[MAX_STR_SIZE];
+	char command[MAX_STR_SIZE],recvMsg[MAX_STR_SIZE];
 	int nready,i,j=0,timeout;
 	socklen_t addrLen;
 
@@ -80,9 +81,9 @@ void startClient(int inputPort){
 			if(FD_ISSET(nready,&readSet)){
 
 				if(nready == STDIN){
-					fgets (command, 30, stdin);
+					fgets (command, MAX_STR_SIZE, stdin);
 					clientOps(command,commandParser(command),listenFD);
-						memset(command,'\0',MG);
+						memset(command,'\0',MAX_STR_SIZE);
 					C_PROMPT;
 
 				}else if(nready==listenFD){
@@ -153,10 +154,16 @@ void clientOps(char *command, int decision, int listenFD){
 		case REGISTER:	log_ret("CMD: Register",I);
 						registerConnection(command);
 						break;
+		case CONNECT:	log_ret("CMD: Connect",I);
+						connectToHost(command);
 		case BLANK:		break;
 		default:		WRONG_COMMAND;
 	}
 }
+
+
+
+
 
 
 void registerConnection(char *command){
@@ -205,4 +212,61 @@ void registerConnection(char *command){
 	sprintf(strRegist,"REGISTER-%s=%d=%s=",systemIP,systemPort,systemName);
 	//printf("%s\n",strRegist);
 	Send(sockFD,strRegist,strlen(strRegist),0);
+}
+
+
+void connectToHost(char *command){
+	if(maxConnection>3){
+		printf("Cannot connect with more than THREE peers\n");
+		return;
+	}
+
+	int i;
+	char ent_Host[MAX_STR_SIZE];
+	char ent_Port[NG];
+		memset(ent_Host,'\0',MAX_STR_SIZE);
+		memset(ent_Port,'\0',NG);
+
+	strcpy(ent_Host,sepExtractor(command,' ',2));
+	strcpy(ent_Port,sepExtractor(command,' ',LAST));
+
+	if(strcmp(ent_Host,systemIP)==0 || strcmp(ent_Host,systemName)==0){
+		printf("Cannot connect to self\n");
+		return;
+	}
+
+	if(validateConnectionParameters(ent_Host,ent_Port,top)==1){
+		//All good to proceed
+		struct addrinfo hints, *res;
+
+		memset(&hints, 0, sizeof hints);
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+
+		Getaddrinfo(ent_Host, ent_Port, &hints, &res);
+		int sockFD = Socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+			char cSock[PG];
+			memset(cSock,'\0',PG);
+		
+		maxFD = max(maxFD,sockFD);
+		FD_SET(sockFD,&allSet);
+		
+		sprintf(cSock,"%d",sockFD);
+
+		logEntry("Connect- Sock created: ",cSock,N);
+	
+    	Connect(sockFD, res->ai_addr, res->ai_addrlen);
+
+    	char strRegist[MAX_STR_SIZE];
+		memset(strRegist,'\0',MAX_STR_SIZE);
+
+		sprintf(strRegist,"CONNECT-%s=%d=%s=",systemIP,systemPort,systemName);
+		//printf("%s\n",strRegist);
+		Send(sockFD,strRegist,strlen(strRegist),0);
+
+		maxConnection++;
+	}else{
+		
+		return;
+	}
 }

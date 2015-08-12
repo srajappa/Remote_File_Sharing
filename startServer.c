@@ -158,7 +158,7 @@ void svrOps(char *command, int decision, int listenFD){
 						Exit(EXIT_APP);
 						break;
 		case BLANK: 	break;
-		case CONNECT:	
+		
 		default:		WRONG_COMMAND;
 	}
 }
