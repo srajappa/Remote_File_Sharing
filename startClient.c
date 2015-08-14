@@ -156,12 +156,48 @@ void clientOps(char *command, int decision, int listenFD){
 						break;
 		case CONNECT:	log_ret("CMD: Connect",I);
 						connectToHost(command);
+						break;
+		case TERMINATE: log_ret("CMD: Terminate",I);
+						terminateConnection(command);
+						break;
 		case BLANK:		break;
 		default:		WRONG_COMMAND;
 	}
 }
 
+void terminateConnection(char *command){
+	struct systemList *temp;
+	char terString[MAX_STR_SIZE];
+		memset(terString,'\0',MAX_STR_SIZE);
+	int idExistsflag =0;
 
+	int id = atoi(sepExtractor(command,' ',LAST));
+	for(temp = top ; temp != NULL; temp = temp->next){
+		if(temp->serialNum == id){
+			idExistsflag = 1;
+			if(temp->connFD == RESTRICTED){
+				printf("Unable to terminate, system not connected.\n");
+				break;
+			}
+			if(strcmp(temp->IPAddress,systemIP)==0){
+				printf("Cannot terminate self\n");
+				break;
+			}else{
+
+				sprintf(terString,"TERMINATE-%s=%d=%s=",systemIP,systemPort,systemName);
+				Send(temp->connFD,terString,strlen(terString),0);
+				logEntry("Terminated connection with: ",temp->name,I);
+				printf("Terminated connection with %s\n",temp->name);
+				temp->connFD = RESTRICTED;
+				break;
+			}
+		}
+
+	}
+	if(idExistsflag==0){
+		printf("Incorrect ID, please enter a valid one\n");
+	}
+}
 
 
 

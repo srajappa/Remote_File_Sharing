@@ -652,6 +652,18 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		printf("\nSuccessfully connected to : %s\n",sepExtractor(recvMsg,'-',3));
 		logEntry("Connection successful PEER: ",sepExtractor(recvMsg,'-',3),N);
 		C_PROMPT;
+	}else if(strcmp(tempCmd,"TERMINATE")==0){
+		strcpy(guestName,sepExtractor(recvMsg,'=',3));
+
+		for(temp=top; temp!=NULL; temp = temp->next){
+			if(strcmp(temp->name,guestName)==0){
+				logEntry("Connection terminated by",temp->name,N);
+				printf("Connection terminated by %s\n",temp->name);
+				break;
+			}
+		}
+		memset(guestName,'\0',MG);
+		C_PROMPT;
 	}
 
 	return retVal;
