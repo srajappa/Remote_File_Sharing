@@ -8,7 +8,7 @@
 #define ERR_TRANS 1
 #define ERR_ABNOR 2
 #define EXIT_APP 3
-
+#define EXIT_MASTER 4
 
 #define EXIT_MESSAGE printf("Abnormal Exit: Check LOGS")
 #define WRONG_COMMAND printf("Incorrect Command: try HELP\n")

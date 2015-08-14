@@ -11,6 +11,9 @@ int maxFD;
 int IS_REGISTERED = 0;
 int maxConnection = 0;
 
+char serverIP[INET6_ADDRSTRLEN];
+
+
 void startClient(int inputPort){
 	systemIP = (char*)malloc(sizeof(char)*INET6_ADDRSTRLEN);
 		checkAlloc(systemIP);
@@ -22,6 +25,7 @@ void startClient(int inputPort){
 	systemPort = inputPort;
 
 	
+
 	strcpy(systemIP,findMyIP());
 	logEntry("IP Address HOST: ",systemIP,I);
 	
@@ -108,21 +112,12 @@ void startClient(int inputPort){
 					
 					numBytes = Recv(nready,recvMsg,MAX_STR_SIZE,0);
 					if(numBytes==0){
-						/*log_ret("Connection implicitly close",N);
-						FD_CLR(nready,&allSet);
-						close(nready);
-						deleteEntry(nready,top);
-							memset(recvMsg,'\0',MAX_STR_SIZE);*/
+						
 					}else{
 						logEntry("Msg from connection ",recvMsg,N);
-						/*printf("\nrecvMsg: %s\n",recvMsg );
-						C_PROMPT;*/
 						if(connMessageDecode(recvMsg,nready,top)==REGISTER){
 							IS_REGISTERED = 1;
 						}
-						/*log_ret("Received a message from a connection",N);
-						requestPad(recvMsg,nready,top);*/
-
 						memset(recvMsg,'\0',MAX_STR_SIZE);
 					}
 				}
@@ -149,7 +144,7 @@ void clientOps(char *command, int decision, int listenFD){
 						break;
 		case EXIT:		close(listenFD);
 						log_ret("CMD: Exit",I);
-						Exit(EXIT_APP);
+						exitApplication();
 						break;
 		case REGISTER:	log_ret("CMD: Register",I);
 						registerConnection(command);
@@ -164,6 +159,18 @@ void clientOps(char *command, int decision, int listenFD){
 		default:		WRONG_COMMAND;
 	}
 }
+
+void exitApplication(){
+	struct systemList *temp;
+	temp  = top;
+	char exitString[MAX_STR_SIZE];
+		memset(exitString,'\0',MAX_STR_SIZE);
+	sprintf(exitString,"EXIT-%s=%d=%s=",systemIP,systemPort,systemName);
+	Send(temp->connFD,exitString,sizeof(exitString),0);
+	log_ret("EXITING APP",I);
+	Exit(EXIT_APP);
+}
+
 
 void terminateConnection(char *command){
 	struct systemList *temp;

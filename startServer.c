@@ -155,12 +155,20 @@ void svrOps(char *command, int decision, int listenFD){
 						break;
 		case EXIT:		close(listenFD);
 						log_ret("CMD: Exit",I);
-						Exit(EXIT_APP);
+						exitMasterApplication();
 						break;
 		case BLANK: 	break;
 		
 		default:		WRONG_COMMAND;
 	}
+}
+
+void exitMasterApplication(){
+	struct systemList *temp;
+	for(temp=top->next ; temp!= NULL; temp=temp->next){
+		Send(temp->connFD,"MASTEREXIT-",strlen("MASTEREXIT-"),0);
+	}
+	Exit(EXIT_APP);
 }
 
 

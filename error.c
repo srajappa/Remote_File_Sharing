@@ -82,6 +82,8 @@ void Exit(int i){
 						break;
 		case EXIT_APP:	fprintf(writeFD, "EXIT: User exited from application\n");
 						break;
+		case EXIT_MASTER: fprintf(writeFD, "EXIT: Server absent from the network\n");
+						break;
 		default:      	fprintf(writeFD, "Exit----> argument is incorrect at <error.c>\n");
 	}
 	fprintf(writeFD, "ft_main Stops [%s]**************************************************\n",systemDate() );

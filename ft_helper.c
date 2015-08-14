@@ -299,6 +299,22 @@ int validateConnectionParameters(char *ent_Host,char *ent_Port,struct systemList
 	return flag;
 }
 
+struct systemList *deleteNode(struct systemList *top, char *guestName){
+	struct systemList *temp, *t1;
+	t1 = top;
+	for(temp = top->next; temp!=NULL; temp=temp->next){
+		if(strcmp(guestName,temp->name)==0){
+			t1->next = temp->next;
+			logEntry("Link Disassociated: ",temp->name,I);
+			break;
+		}
+		t1 = temp;
+	}
+	if(strcmp(guestName,top->name)==0){
+		top = top->next;
+	}
+	return top;
+}
 
 //LINKED LIST __________________________ END
 
@@ -554,11 +570,9 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 
 		sendUpdate(top);
 
-
-
 	}else if(strcmp(tempCmd,"REG_ACK")==0){
 
-		printf("\nRegistration successfully completed.\n");
+		printf("Registration successfully completed.\n");
 		C_PROMPT;
 		log_ret("Registration Completed",I);
 		/*	1. Extract information about sender and 
@@ -591,7 +605,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 			}
 		}
 		printf("\n--Recvd updated SERVER-IP list--\n");
-		for(i=1; i<=ctr; i++){
+		/*for(i=1; i<=ctr; i++){
 			strcpy(localB,sepExtractor(tempCmd,'!',i));
 
 			printf("[%d]   <--%s--%d--%s>\n",i,sepExtractor(localB,'=',1),atoi(sepExtractor(localB,'=',2)),sepExtractor(localB,'=',3));
@@ -599,7 +613,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 			memset(localB,'\0',MAX_STR_SIZE);
 			memset(guestName,'\0',MG);
 			memset(guestIP,'\0',INET6_ADDRSTRLEN);		
-		}
+		}*/
 
 		for(i=1; i<=ctr; i++){
 			strcpy(localB,sepExtractor(tempCmd,'!',i));
@@ -620,8 +634,12 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 				memset(guestIP,'\0',INET6_ADDRSTRLEN);				
 			}
 		}
+		//printf("\n");
+		displayList(top);
 		
 		C_PROMPT;
+	
+
 	}else if(strcmp(tempCmd,"CONNECT")==0){
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 		strcpy(guestIP,sepExtractor(sepExtractor(recvMsg,'-',LAST),'=',1));
@@ -643,15 +661,25 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 
 		Send(nready,sendInfo,strlen(sendInfo),0);
 
-
-
 		memset(guestName,'\0',MG);
 		memset(guestIP,'\0',INET6_ADDRSTRLEN);	
 		C_PROMPT;
+	
+
 	}else if(strcmp(tempCmd,"CONN_ACK")==0){
+		strcpy(guestName,sepExtractor(recvMsg,'-',3));
+		for(temp = top ; temp!=NULL; temp = temp->next){
+			if(strcmp(guestName,temp->name)==0){
+				temp->connFD = nready;
+				break;
+			}
+		}
 		printf("\nSuccessfully connected to : %s\n",sepExtractor(recvMsg,'-',3));
 		logEntry("Connection successful PEER: ",sepExtractor(recvMsg,'-',3),N);
+		memset(guestName,'\0',MG);
 		C_PROMPT;
+	
+
 	}else if(strcmp(tempCmd,"TERMINATE")==0){
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 
@@ -664,7 +692,39 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		}
 		memset(guestName,'\0',MG);
 		C_PROMPT;
+	
+
+	}else if(strcmp(tempCmd,"EXIT")==0){
+		strcpy(guestName,sepExtractor(recvMsg,'=',3));
+
+		for(temp=top; temp!=NULL; temp=temp->next){
+			if(strcmp(temp->name,guestName)==0){
+
+				top = deleteNode(top,guestName);
+				deleteBroadcast(top,guestName);
+				sendUpdate(top);
+				printf("%s has exited the network. \n",temp->name);
+				logEntry("Systems exits application:",temp->name,I);
+				break;
+			}
+		}
+		S_PROMPT;
+
+	}else if(strcmp(tempCmd,"DELETE")==0){
+		strcpy(guestName,sepExtractor(recvMsg,'=',3));
+
+		for(temp=top; temp!=NULL; temp=temp->next){
+			if(strcmp(temp->name,guestName)==0){
+				top = deleteNode(top,guestName);
+				break;
+			}
+		}
+	}else if(strcmp(tempCmd,"MASTEREXIT")==0){
+		printf("Connection to server lost, exiting network\n");
+		log_ret("Master Exits",I);
+		Exit(EXIT_MASTER);
 	}
+
 
 	return retVal;
 
@@ -690,6 +750,18 @@ void sendUpdate(struct systemList *top){
 	//Srinivasan is here when register was completed
 	/*free(payLoad);
 	free(tempStr);*/
+}
+
+
+void deleteBroadcast(struct systemList *top, char *guestName){
+	struct systemList *temp;
+	char deleteString[MAX_STR_SIZE];
+		memset(deleteString,'\0',MAX_STR_SIZE);
+	sprintf(deleteString,"DELETE-&&&=444=%s=",guestName);
+	for(temp=top->next; temp!=NULL; temp=temp->next){
+		logEntry("Delete Broadcast to:",temp->name,N);
+		Send(temp->connFD,deleteString,strlen(deleteString),0);
+	}
 }
 
 //NETWORK OPS______________________________END
