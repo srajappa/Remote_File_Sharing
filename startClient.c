@@ -155,10 +155,14 @@ void clientOps(char *command, int decision, int listenFD){
 		case TERMINATE: log_ret("CMD: Terminate",I);
 						terminateConnection(command);
 						break;
+		case UPLOAD:	log_ret("CMD: Upload",I);
+						uploadFiles(command,top,allSet);
+						break;
 		case BLANK:		break;
 		default:		WRONG_COMMAND;
 	}
 }
+
 
 void exitApplication(){
 	struct systemList *temp;

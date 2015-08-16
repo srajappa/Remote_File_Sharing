@@ -364,6 +364,17 @@ void svr_help(){
 
 //MISC UTILITIES ___________________________ BEGIN
 
+int fileSize(FILE *fptr){
+	char ch;
+	int ctr=0;
+	while(ch!=EOF){
+		ch = getc(fptr);
+		ctr++;
+	}
+	return ctr;
+}
+
+
 int validateInput(int argc, char *argv[]){
 	if(argc==3){
 		if((strcmp(Toupper(argv[1]),"S")==0)){
@@ -764,6 +775,62 @@ void deleteBroadcast(struct systemList *top, char *guestName){
 	}
 }
 
+
+void uploadFiles(char *command,struct systemList *top, fd_set allSet){
+	int connid = atoi(sepExtractor(command,' ',2));
+	if(connid==1){
+		printf("Cannot Upload to SERVER\n");
+		return;
+	}
+	
+	char fileName[MAX_STR_SIZE];
+		memset(fileName,'\0',MAX_STR_SIZE);
+	strcpy(fileName,sepExtractor(command,' ',LAST));		//Assuming the file is in the same directory
+
+	FILE *fptr;
+	fptr = fopen(fileName,"r");
+	
+	if(fptr==NULL){
+		printf("Unable to read file, couldn't upload.\n");
+		return;
+	}
+
+	int sizeOfFile = fileSize(fptr);
+	int partitions = sizeOfFile / MAX_STR_SIZE;
+	int recFlag = 0;
+	int conn,i,j; 
+	FD_CLR(STDIN, &allSet);			//Disable the input terminal
+	
+/*	struct systemList *temp;
+	char uploadString[MAX_STR_SIZE];
+		memset(uploadString,'\0',MAX_STR_SIZE);
+	sprintf(uploadString,"UPLOAD-%s-%s-%d-%d-%d-",myName,fileName,sizeOfFile,partitions+1,0);	//First partition
+
+	for(temp=top; temp!=NULL; temp=temp->next){
+		if(connid==temp->serialNum){
+			recFlag = 1;
+			conn = temp->connFD;
+			logEntry("Uploading data to: ",temp->name,N);
+			Send(conn, uploadString,sizeof(uploadString),0);
+				memset(uploadString,'\0',MAX_STR_SIZE);
+		}
+	}
+	if(recFlag==0){
+		printf("Connection ID invalid, cannot upload file\n");
+		return;
+	}
+
+	for(i=1; i<=partitions+1; i++){
+		sprintf(uploadString,"UPLOAD_FILE-%s-%s-%d-",myName,fileName,i);
+		for(j=(strlen(uploadString));j<MAX_STR_SIZE; j++){
+			uploadString[j] = fgetc(fptr);
+		}
+		logEntry("Uploading payLoad #",temp->name,N);
+		Send(conn,uploadString,sizeof(uploadString),0);
+		memset(uploadString,'\0',MAX_STR_SIZE);
+	}*/
+		//FD_SET(STDIN,&allSet);	
+}
 //NETWORK OPS______________________________END
 
 
