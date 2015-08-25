@@ -108,7 +108,7 @@ void startServer(int inputPort){
 
 					struct sockaddr_in *sAdd = (struct sockaddr_in *)&cliAddr;
 					inet_ntop(AF_INET, &sAdd->sin_addr, connAddress, sizeof connAddress);
-					printf("\nConnection request from: %s\n",connAddress);
+					printf("\n Registration request from: %s\n",connAddress);
 					logEntry("CONN from: ",connAddress,N);
 
 					S_PROMPT;

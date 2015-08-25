@@ -1,1 +1,5 @@
 register 128.205.36.8 10000
+
+connect 128.205.36.24 3990
+
+upload 3 urlContent.txt README.textile

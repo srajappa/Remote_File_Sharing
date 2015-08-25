@@ -114,8 +114,8 @@ void startClient(int inputPort){
 					if(numBytes==0){
 						
 					}else{
-						logEntry("Msg from connection ",recvMsg,N);
-						if(connMessageDecode(recvMsg,nready,top)==REGISTER){
+						//logEntry("Msg from connection ",recvMsg,N);
+						if(connMessageDecode(recvMsg,nready,top,&maxConnection)==REGISTER){
 							IS_REGISTERED = 1;
 						}
 						memset(recvMsg,'\0',MAX_STR_SIZE);
@@ -156,7 +156,7 @@ void clientOps(char *command, int decision, int listenFD){
 						terminateConnection(command);
 						break;
 		case UPLOAD:	log_ret("CMD: Upload",I);
-						uploadFiles(command,top,allSet);
+						uploadFiles(command,top,&allSet);
 						break;
 		case BLANK:		break;
 		default:		WRONG_COMMAND;

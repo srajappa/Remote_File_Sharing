@@ -25,7 +25,7 @@
 int I_PORT;
 
 char svrIP[INET6_ADDRSTRLEN];
-int svrPort;
+int svrPort,startMin, startSec,file_Size;
 char logString[MAX_STR_SIZE];
 char myName[MG];
 //STRING OPS --------------------------- BEGIN
@@ -540,9 +540,9 @@ char *findMyName(){
 
 //NETWORK OPS---------------------------BEGIN
 
-int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
+int connMessageDecode(char *recvMsg,int nready,struct systemList *top, int *maxconnection){
 
-	int i;
+	int i,j=0;
 	int ctr=0;
 	char tempCmd[MAX_STR_SIZE];
 		memset(tempCmd,'\0',MAX_STR_SIZE);
@@ -553,6 +553,8 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		
 	int guestPort,num;
 	int retVal=0;
+	FILE *fptr;
+
 
 	struct systemList *temp = top;
 
@@ -608,6 +610,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 
 	}else if(strcmp(tempCmd,"UPDATE")==0){
 		
+		logEntry("Msg from connection ",recvMsg,N);
 			memset(tempCmd,'\0',MAX_STR_SIZE);
 		strcpy(tempCmd,sepExtractor(recvMsg,'-',LAST));
 		for(i=0; i<strlen(tempCmd); i++){
@@ -616,15 +619,6 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 			}
 		}
 		printf("\n--Recvd updated SERVER-IP list--\n");
-		/*for(i=1; i<=ctr; i++){
-			strcpy(localB,sepExtractor(tempCmd,'!',i));
-
-			printf("[%d]   <--%s--%d--%s>\n",i,sepExtractor(localB,'=',1),atoi(sepExtractor(localB,'=',2)),sepExtractor(localB,'=',3));
-			//printf("While localB [%d]: %s\n",i,localB );
-			memset(localB,'\0',MAX_STR_SIZE);
-			memset(guestName,'\0',MG);
-			memset(guestIP,'\0',INET6_ADDRSTRLEN);		
-		}*/
 
 		for(i=1; i<=ctr; i++){
 			strcpy(localB,sepExtractor(tempCmd,'!',i));
@@ -652,6 +646,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 	
 
 	}else if(strcmp(tempCmd,"CONNECT")==0){
+		logEntry("Msg from connection ",recvMsg,N);
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 		strcpy(guestIP,sepExtractor(sepExtractor(recvMsg,'-',LAST),'=',1));
 
@@ -678,6 +673,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 	
 
 	}else if(strcmp(tempCmd,"CONN_ACK")==0){
+		logEntry("Msg from connection ",recvMsg,N);
 		strcpy(guestName,sepExtractor(recvMsg,'-',3));
 		for(temp = top ; temp!=NULL; temp = temp->next){
 			if(strcmp(guestName,temp->name)==0){
@@ -692,6 +688,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 	
 
 	}else if(strcmp(tempCmd,"TERMINATE")==0){
+		logEntry("Msg from connection ",recvMsg,N);
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 
 		for(temp=top; temp!=NULL; temp = temp->next){
@@ -706,6 +703,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 	
 
 	}else if(strcmp(tempCmd,"EXIT")==0){
+		logEntry("Msg from connection ",recvMsg,N);
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 
 		for(temp=top; temp!=NULL; temp=temp->next){
@@ -722,6 +720,7 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 		S_PROMPT;
 
 	}else if(strcmp(tempCmd,"DELETE")==0){
+		logEntry("Msg from connection ",recvMsg,N);
 		strcpy(guestName,sepExtractor(recvMsg,'=',3));
 
 		for(temp=top; temp!=NULL; temp=temp->next){
@@ -730,10 +729,72 @@ int connMessageDecode(char *recvMsg,int nready,struct systemList *top){
 				break;
 			}
 		}
+		*maxconnection = *maxconnection-1;
+
 	}else if(strcmp(tempCmd,"MASTEREXIT")==0){
+		logEntry("Msg from connection ",recvMsg,N);
 		printf("Connection to server lost, exiting network\n");
 		log_ret("Master Exits",I);
 		Exit(EXIT_MASTER);
+
+	}else if(strcmp(tempCmd,"UPLOAD")==0){
+		logEntry("Msg from connection ",recvMsg,N);
+		log_ret("Upload requested",I);
+		char fileName[MG];
+			memset(fileName,'\0',MG);
+		strcpy(fileName,sepExtractor(recvMsg,'-',3));
+		//strcpy(fileName,"fileNew.txt");
+
+		time_t now = time(NULL);
+	   	struct tm *t = localtime(&now);
+	   	
+	   	startMin = t->tm_min;
+	   	startSec = t->tm_sec;
+
+	   	file_Size = atoi(sepExtractor(recvMsg,'-',4));
+		fptr = fopen(fileName,"w");
+		
+		fflush(fptr);
+		close(fptr);
+	}else if(strcmp(tempCmd,"UPLOAD_FILE")==0){
+		char fileName[MG];
+			memset(fileName,'\0',MG);
+		strcpy(fileName,sepExtractor(recvMsg,'-',3));
+		//strcpy(fileName,"fileNew.txt");
+		char paste[MAX_STR_SIZE];
+			memset(paste,'\0',MAX_STR_SIZE);
+
+
+		fptr = fopen(fileName,"a");
+		for(i=0; i< strlen(recvMsg); i++){
+			if(ctr<4){
+				if(recvMsg[i]=='-'){
+					ctr++;
+				}
+			}else{
+				paste[j++]=recvMsg[i];
+			}
+		}
+
+		fprintf(fptr,"%s",paste);
+		fflush(fptr);
+		close(fptr);
+		logEntry("File updated: ",fileName,N);
+		if(strcmp(sepExtractor(recvMsg,'-',4),"999")==0){
+			printf("Downloaded file (%s) from %s\n",fileName,sepExtractor(recvMsg,'-',2));
+			time_t now = time(NULL);
+	   		struct tm *t = localtime(&now);
+
+	   		int totalTime = (t->tm_min - startMin) * 60 + (t->tm_sec - startSec);
+
+	   		totalTime = (totalTime==0) ? 1 : totalTime;
+	   		//printf("TIME: starts %d and %d && now %d and %d\n",startMin, startSec, t->tm_min, t->tm_sec );
+	   		int hmm = (file_Size*8)/totalTime; 
+	   		printf("Rx: %s->%s, File size: %d Bytes, Time taken: %d seconds, Rx Rate: %d bits/sec \n",sepExtractor(sepExtractor(recvMsg,'-',2),'.',1),sepExtractor(myName,'.',1),file_Size,totalTime,hmm );
+
+			logEntry("File write complete: ",fileName,N);
+			C_PROMPT;
+		}
 	}
 
 
@@ -776,13 +837,22 @@ void deleteBroadcast(struct systemList *top, char *guestName){
 }
 
 
-void uploadFiles(char *command,struct systemList *top, fd_set allSet){
+void uploadFiles(char *command,struct systemList *top, fd_set *allSet){
 	int connid = atoi(sepExtractor(command,' ',2));
+	int startMin, startSec;
+	int endMin, endSec;
+
+	time_t now = time(NULL);
+	struct tm *t = localtime(&now);
+
 	if(connid==1){
 		printf("Cannot Upload to SERVER\n");
 		return;
 	}
-	
+	if(connid==2){
+		printf("Cannot Upload to self\n");
+		return;
+	}
 	char fileName[MAX_STR_SIZE];
 		memset(fileName,'\0',MAX_STR_SIZE);
 	strcpy(fileName,sepExtractor(command,' ',LAST));		//Assuming the file is in the same directory
@@ -799,12 +869,23 @@ void uploadFiles(char *command,struct systemList *top, fd_set allSet){
 	int partitions = sizeOfFile / MAX_STR_SIZE;
 	int recFlag = 0;
 	int conn,i,j; 
-	FD_CLR(STDIN, &allSet);			//Disable the input terminal
-	
-/*	struct systemList *temp;
+	close(fptr);
+	fptr = fopen(fileName,"r");
+
+	startMin = t->tm_min;
+	startSec = t->tm_sec;
+
+	char tempStr[MG];
+		memset(tempStr,'\0',MG);
+
+	FD_CLR(STDIN,allSet);
+
+	struct systemList *temp;
 	char uploadString[MAX_STR_SIZE];
 		memset(uploadString,'\0',MAX_STR_SIZE);
 	sprintf(uploadString,"UPLOAD-%s-%s-%d-%d-%d-",myName,fileName,sizeOfFile,partitions+1,0);	//First partition
+	//MY NAME, FILENAME, SIZEOFFILE, PARTITIONS, 
+
 
 	for(temp=top; temp!=NULL; temp=temp->next){
 		if(connid==temp->serialNum){
@@ -813,22 +894,40 @@ void uploadFiles(char *command,struct systemList *top, fd_set allSet){
 			logEntry("Uploading data to: ",temp->name,N);
 			Send(conn, uploadString,sizeof(uploadString),0);
 				memset(uploadString,'\0',MAX_STR_SIZE);
+			break;
 		}
 	}
 	if(recFlag==0){
 		printf("Connection ID invalid, cannot upload file\n");
 		return;
 	}
-
+	log_ret("Preparing for upload ",I);
+	int ab =0;
 	for(i=1; i<=partitions+1; i++){
-		sprintf(uploadString,"UPLOAD_FILE-%s-%s-%d-",myName,fileName,i);
+		sprintf(uploadString,"UPLOAD_FILE-%s-%s-%d-",myName,fileName,ab=(i==partitions+1) ? 999 : i );
 		for(j=(strlen(uploadString));j<MAX_STR_SIZE; j++){
 			uploadString[j] = fgetc(fptr);
+			if(uploadString[j]==EOF){
+				uploadString[j]='\0';
+				break;
+			}
 		}
-		logEntry("Uploading payLoad #",temp->name,N);
+		sprintf(tempStr,"%d--%s",i,temp->name,N);
+		logEntry("Uploading payLoad #",tempStr,N);
 		Send(conn,uploadString,sizeof(uploadString),0);
 		memset(uploadString,'\0',MAX_STR_SIZE);
-	}*/
+		memset(tempStr,'\0',MG);
+	}
+	close(fptr);
+	printf("Uploaded file %s to %s\n",fileName,temp->name);
+	int totalTime = (t->tm_min - startMin) * 60 + (t->tm_sec - startSec);
+
+	totalTime = (totalTime==0) ? 1 : totalTime;
+	//printf("TIME: starts %d and %d && now %d and %d\n",startMin, startSec, t->tm_min, t->tm_sec );
+	int hmm = (sizeOfFile*8)/totalTime; 
+	printf("Tx: %s->%s, File size: %d Bytes, Time taken: %d seconds, Rx Rate: %d bits/sec \n",sepExtractor(myName,'.',1),sepExtractor(temp->name,'.',1),sizeOfFile,totalTime,hmm );
+	
+	FD_SET(STDIN,allSet);
 		//FD_SET(STDIN,&allSet);	
 }
 //NETWORK OPS______________________________END
