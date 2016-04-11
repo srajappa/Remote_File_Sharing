@@ -10,7 +10,7 @@ among the nodes. Once a node is connected to the server, it can connect and exch
 
 #### Operations Supported ####
 The current implementation supports the following operations:
-Markup: * Display IP address.
+Markup : * Display IP address.
         * Display active port.
         * Display the active connections list.
         * Connect with a system.
