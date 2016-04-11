@@ -11,14 +11,14 @@ among the nodes. Once a node is connected to the server, it can connect and exch
 #### Operations Supported ####
 The current implementation supports the following operations:
 
-Markup : * Display IP address.
-        * Display active port.
-        * Display the active connections list.
-        * Connect with a system.
-        * Terminate connection with a system.
-        * Exit the application (console).
-        * Upload file(s) to the system.
-        * Help
+ * Display IP address.
+ * Display active port.
+ * Display the active connections list.
+ * Connect with a system.
+ * Terminate connection with a system.
+ * Exit the application (console).
+ * Upload file(s) to the system.
+ * Help
 
 #### Running the application ####
 Clone this repo (or your own fork!) to your **home** directory (`/Users/username`).
